@@ -23,13 +23,14 @@ public class Client {
 
 	/**
 	 * @param args
+	 * @throws UnknownHostException 
 	 */
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnknownHostException {
 
-		String hostname = "127.0.0.1";
+		String hostname = InetAddress.getLocalHost().getHostName();;
 
-		String opr = "REGISTER";
+		String opr = "LOOKUP";
 		String[] to_send = { "AA-BB-CC", "ruben" };
 
 		try {
@@ -58,14 +59,14 @@ public class Client {
 
 		if (this.opr.equals("REGISTER")) {
 
-			message = this.opr + " " + this.to_send[0] + " " + this.to_send[1];
+			message = this.opr + " " + this.to_send[0] + " " + this.to_send[1] + " ";
 			buffer = message.getBytes();
 
 			this.packet = new DatagramPacket(buffer, buffer.length, this.address, this.port);
 			this.socket.send(packet);
 		} else if (this.opr.equals("LOOKUP")) {
 
-			message = this.opr + " " + this.to_send[0];
+			message = this.opr + " " + this.to_send[0] + " ";
 			buffer = message.getBytes();
 			packet = new DatagramPacket(buffer, buffer.length, this.address, this.port);
 			this.socket.send(packet);

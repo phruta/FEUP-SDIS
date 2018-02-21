@@ -27,7 +27,7 @@ public class Server {
 			server.start();
 
 		} catch (Exception e) {
-			System.out.println("Error opening server.\n");
+			System.out.println(e.getMessage());
 		}
 	}
 
@@ -49,7 +49,7 @@ public class Server {
 			System.out.println("COMMAND: " + buffer);
 
 			if (buffer_splited[0].equals("REGISTER")) {
-				int num = this.register(buffer_splited[1], buffer_splited[2]);
+				int num = this.register(buffer_splited[2], buffer_splited[1]);
 
 				String result = Integer.toString(num);
 
@@ -60,9 +60,8 @@ public class Server {
 				}
 
 			} else if (buffer_splited[0].equals("LOOKUP")) {
-
 				String owner = this.lookup(buffer_splited[1]);
-
+				
 				try {
 					this.sendAnswer(owner, packet);
 				} catch (Exception e) {
@@ -84,15 +83,15 @@ public class Server {
 
 	private int register(String owner, String numberPlate) {
 
-		if (database.get(numberPlate) == null)
+		if (database.get(numberPlate) != null)
 			return -1;
 
 		database.put(numberPlate, owner);
 		return database.size();
 	}
 
-	private String lookup(String plate) {
-		String to_return = database.get(plate);
+	private String lookup(String numberPlate) {
+		String to_return = database.get(numberPlate);
 		if (to_return != null)
 			return to_return;
 
