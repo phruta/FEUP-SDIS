@@ -3,61 +3,89 @@ package files;
 import java.util.ArrayList;
 
 public class Chunk {
+	public static final int MAX_SIZE = 64000;
+
+	private int chunkNo;
 	
-private String fileID;
-private int ChunkNum;
-private ArrayList<Byte> FileInfo= new ArrayList<Byte>();
+	private String fileID;
 
+	private int replicationDegree;
 
-public Chunk(String fileID, int chunkNum, ArrayList<Byte> fileInfo) {
-	super();
-	this.fileID = fileID;
-	ChunkNum = chunkNum;
-	FileInfo = fileInfo;
-}
+	private byte[] body;
+	
+	private ArrayList<String> peersID =  new ArrayList<String>();
+	
 
-public String getFileID() {
-	return fileID;
-}
-public void setFileID(String fileID) {
-	this.fileID = fileID;
-}
-public int getChunkNum() {
-	return ChunkNum;
-}
-public void setChunkNum(int chunkNum) {
-	ChunkNum = chunkNum;
-}
-public ArrayList<Byte> getFileInfo() {
-	return FileInfo;
-}
-public void setFileInfo(ArrayList<Byte> fileInfo) {
-	FileInfo = fileInfo;
-}
-@Override
-public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + ChunkNum;
-	result = prime * result + ((FileInfo == null) ? 0 : FileInfo.hashCode());
-	return result;
-}
-@Override
-public boolean equals(Object obj) {
-	if (this == obj)
-		return true;
-	if (obj == null)
-		return false;
-	if (!(obj instanceof Chunk))
-		return false;
-	Chunk other = (Chunk) obj;
-	if (ChunkNum != other.ChunkNum)
-		return false;
-	if (FileInfo == null) {
-		if (other.FileInfo != null)
+	public Chunk(int chunkNo, String fileID, int replicationDegree, byte[] body, ArrayList<String> peersID) {
+		super();
+		this.chunkNo = chunkNo;
+		this.fileID = fileID;
+		this.replicationDegree = replicationDegree;
+		this.body = body;
+		this.peersID = peersID;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + chunkNo;
+		result = prime * result + ((fileID == null) ? 0 : fileID.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-	} else if (!FileInfo.equals(other.FileInfo))
-		return false;
-	return true;
-}
+		if (getClass() != obj.getClass())
+			return false;
+		Chunk other = (Chunk) obj;
+		if (chunkNo != other.chunkNo)
+			return false;
+		if (fileID == null) {
+			if (other.fileID != null)
+				return false;
+		} else if (!fileID.equals(other.fileID))
+			return false;
+		return true;
+	}
+
+	public int getChunkNo() {
+		return chunkNo;
+	}
+
+	public void setChunkNo(int chunkNo) {
+		this.chunkNo = chunkNo;
+	}
+
+	public String getFileID() {
+		return fileID;
+	}
+
+	public void setFileID(String fileID) {
+		this.fileID = fileID;
+	}
+
+	public int getReplicationDegree() {
+		return replicationDegree;
+	}
+
+	public void setReplicationDegree(int replicationDegree) {
+		this.replicationDegree = replicationDegree;
+	}
+
+	public byte[] getData() {
+		return body;
+	}
+
+	public void setData(byte[] data) {
+		this.body = data;
+	}
+
+	public static int getMaxSize() {
+		return MAX_SIZE;
+	}
 }
