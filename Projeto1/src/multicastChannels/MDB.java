@@ -2,12 +2,12 @@ package multicastChannels;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
+
 
 public class MDB extends Channel {
 
-	public MDB(MulticastSocket socket, InetAddress address, int port) {
-		super(socket, address, port);
+	public MDB(InetAddress address, int port) {
+		super(address, port);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -11,7 +11,7 @@ public abstract class Channel implements Runnable {
 	public int port;
 	private volatile boolean stopWork;
 
-	public Channel(MulticastSocket socket, InetAddress address, int port) {
+	public Channel(InetAddress address, int port) {
 		this.address = address;
 		this.port = port;
 		this.stopWork = false;

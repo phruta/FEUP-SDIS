@@ -2,12 +2,12 @@ package multicastChannels;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
+
 
 public class MC extends Channel {
 
-	public MC(MulticastSocket socket, InetAddress address, int port) {
-		super(socket, address, port);
+	public MC(InetAddress address, int port) {
+		super(address, port);
 		// TODO Auto-generated constructor stub
 	}
 
