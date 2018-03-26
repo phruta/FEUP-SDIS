@@ -2,14 +2,13 @@ package Server;
 
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import multicastChannels.*;
 
+
 public class Peer extends PeerInterfaceImplementation {
 
-	private static final int RMI_PORT = 13254;
 	public final static int PROTOCOL_VERSION = 0;
 	public final static int SERVER_ID = 1;
 	public final static int ACCESS_POINT = 2;
@@ -43,10 +42,8 @@ public class Peer extends PeerInterfaceImplementation {
 	
 	private static boolean loadRMI() {
 	      try { 
-	    	  
-	    	  System.setProperty("java.rmi.server.hostname",InetAddress.getLocalHost().getHostName());
 	          // Instantiating the implementation class 
-	          PeerInterfaceImplementation obj = new PeerInterfaceImplementation(); 
+	          Peer obj = new Peer(); 
 	     
 	          // Exporting the object of implementation class  
 	          // (here we are exporting the remote object to the stub) 
@@ -54,9 +51,7 @@ public class Peer extends PeerInterfaceImplementation {
 	          
 	          // Binding the remote object (stub) in the registry 
 	          
-	          Registry registry = LocateRegistry.getRegistry(); 
-	          
-	          registry.rebind(accessPoint, stub);  
+	          LocateRegistry.getRegistry().rebind(accessPoint, stub);  
 	       } catch (Exception e) { 
 	          System.err.println("Server exception: " + e.toString()); 
 	          e.printStackTrace();

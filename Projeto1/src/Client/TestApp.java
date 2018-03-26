@@ -43,7 +43,6 @@ public class TestApp {
 
 	public static PeerInterface loadRMI() {
 		try {
-			System.setProperty("java.rmi.server.hostname",InetAddress.getLocalHost().getHostName());
 			Registry registry = LocateRegistry.getRegistry();
 			stub = (PeerInterface) registry.lookup(args[ACCESS_POINT]);
 			return stub;
@@ -72,8 +71,8 @@ public class TestApp {
 	}
 
 	public static void callBackup() {
-		File file = null;
-		if (!getFile(file))
+		File file = getFile();
+		if (file==null)
 			return;
 
 		try {
@@ -87,8 +86,8 @@ public class TestApp {
 	}
 
 	public static void callRestore() {
-		File file = null;
-		if (!getFile(file))
+		File file = getFile();
+		if (file==null)
 			return;
 
 		try {
@@ -100,8 +99,8 @@ public class TestApp {
 	}
 
 	public static void callDelete() {
-		File file = null;
-		if (!getFile(file))
+		File file = getFile();
+		if (file==null)
 			return;
 
 		try {
@@ -131,15 +130,15 @@ public class TestApp {
 		}
 	}
 
-	private static boolean getFile(File file) {
-		file = new File(args[PATH]);
+	private static File getFile() {
+		File file = new File(args[PATH]);
 
 		if (!file.exists() || !file.isFile()) {
 			System.out.println("ERROR: The path you indicated is not a file");
-			return false;
+			return null;
 		}
 
-		return true;
+		return file;
 	}
 
 }
