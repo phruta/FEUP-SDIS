@@ -5,6 +5,8 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.io.File;
 import java.lang.reflect.*;
+import java.net.InetAddress;
+
 import javafx.util.Pair;
 import Server.PeerInterface;
 
@@ -41,7 +43,8 @@ public class TestApp {
 
 	public static PeerInterface loadRMI() {
 		try {
-			Registry registry = LocateRegistry.getRegistry(null);
+			System.setProperty("java.rmi.server.hostname",InetAddress.getLocalHost().getHostName());
+			Registry registry = LocateRegistry.getRegistry();
 			stub = (PeerInterface) registry.lookup(args[ACCESS_POINT]);
 			return stub;
 		} catch (Exception e) {

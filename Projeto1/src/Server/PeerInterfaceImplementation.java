@@ -7,32 +7,36 @@ public class PeerInterfaceImplementation implements PeerInterface {
 
 	@Override
 	public void backup(File file, int replicationDeg) throws RemoteException {
-		// TODO Auto-generated method stub
+		System.out.println(file.toString()+ "\n" + Integer.toString(replicationDeg));
+		return;
 		
 	}
 
 	@Override
 	public void delete(File file) throws RemoteException {
-		// TODO Auto-generated method stub
+		System.out.println(file.toString());
+		return;
 		
 	}
 
 	@Override
 	public void restore(File file) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		System.out.println(file.toString());
+		return;
+
 	}
 
 	@Override
 	public void reclaim(int space) throws RemoteException {
-		// TODO Auto-generated method stub
+		System.out.println(Integer.toString(space));
+		return;
 		
 	}
 
 	@Override
 	public String state() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("state working");
+		return "lol";
 	}
 
 
