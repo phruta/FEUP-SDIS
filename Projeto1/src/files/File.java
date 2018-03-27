@@ -1,36 +1,34 @@
 package files;
 
-import java.util.HashMap;
 
 public class File {
-	
 	private String fileID;
 	private int replicationDegree;
-	private HashMap<Integer, Chunk> chunks = new  HashMap<Integer, Chunk>();
+	private int numChunks;
 	
-	public File(String fileID, int replicationDegree) {
+	@Override
+	public String toString() {
+		return "FileInfo [fileID=" + fileID + ", replicationDegree=" + replicationDegree + ", numChunks=" + numChunks
+				+ "]";
+	}
+
+	public File(String fileID, int replicationDegree, int numChunks) {
 		this.fileID = fileID;
 		this.replicationDegree = replicationDegree;
+		this.numChunks = numChunks;
 	}
 
 	public String getFileID() {
 		return fileID;
 	}
 
-	public void setFileID(String fileID) {
-		this.fileID = fileID;
-	}
-
-	public int getNumChunks() {
-		return chunks.size();
-	}
-
 	public int getReplicationDegree() {
 		return replicationDegree;
 	}
 
-	public void setReplicationDegree(int replicationDegree) {
-		this.replicationDegree = replicationDegree;
+	public int getNumChunks() {
+		return numChunks;
 	}
 
 }
+

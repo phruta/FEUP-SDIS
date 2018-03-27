@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
+import files.DataBase;
 import multicastChannels.*;
 
 
@@ -23,10 +24,12 @@ public class Peer extends PeerInterfaceImplementation {
 	public final static int MDR_CHANNEL = 2;
 	
 
-	private static Integer PeerID;
-	private static String version;
+	private static volatile Integer PeerID;
+	private static volatile String version;
 	private static String accessPoint;
 	private static Channel[] MulticastChannels= new Channel[3];
+	private static volatile DataBase db;
+	
 
 	public static void main(String[] args) {
 		if (!validArgs(args))
@@ -34,10 +37,17 @@ public class Peer extends PeerInterfaceImplementation {
 		
 		if(!loadRMI())
 			return;
+		loadDatabase();
 		
+		new Thread(MulticastChannels[0]).start();
+		new Thread(MulticastChannels[1]).start();
+		new Thread(MulticastChannels[2]).start();
 		System.err.println("Server ready"); 
-		while(true) {}
         
+	}
+	
+	private static void loadDatabase() {
+		db= new DataBase();
 	}
 	
 	private static boolean loadRMI() {

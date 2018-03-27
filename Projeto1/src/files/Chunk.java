@@ -2,6 +2,7 @@ package files;
 
 import java.util.ArrayList;
 
+
 public class Chunk {
 	public static final int MAX_SIZE = 64000;
 
@@ -13,17 +14,23 @@ public class Chunk {
 
 	private byte[] body;
 	
-	private ArrayList<String> peersID =  new ArrayList<String>();
+	private ArrayList<Integer> peersID =  new ArrayList<>();
 	
 
-	public Chunk(int chunkNo, String fileID, int replicationDegree, byte[] body, ArrayList<String> peersID) {
+	public Chunk(int chunkNo, String fileID, int replicationDegree, byte[] body) {
 		super();
 		this.chunkNo = chunkNo;
 		this.fileID = fileID;
 		this.replicationDegree = replicationDegree;
 		this.body = body;
-		this.peersID = peersID;
 	}
+	
+	public Chunk(int chunkNo, String fileID) {
+		super();
+		this.chunkNo = chunkNo;
+		this.fileID = fileID;
+	}
+
 
 	@Override
 	public int hashCode() {
@@ -87,5 +94,18 @@ public class Chunk {
 
 	public static int getMaxSize() {
 		return MAX_SIZE;
+	}
+	
+	public void addPeer(int PeerID) {
+		if(!peersID.contains(PeerID))
+			peersID.add(PeerID);
+	}
+	
+	public void removePeer(int PeerID) {
+		peersID.remove(PeerID);
+	}
+	
+	public int peesrIDsSize() {
+		return peersID.size();
 	}
 }
