@@ -3,6 +3,8 @@ package multicastChannels;
 import java.io.IOException;
 import java.net.*;
 
+import protocol.MulticastHandler;
+
 public abstract class Channel implements Runnable {
 	public static final int MAX_MESSAGE_SIZE = 65000;
 
@@ -36,14 +38,22 @@ public abstract class Channel implements Runnable {
 
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 				socket.receive(packet);
-				handler(packet);
-
+				new Thread(new MulticastHandler(packet));
 			} catch (IOException e) {
+				e.getMessage();
 				e.printStackTrace();
 			}
 		}
 	}
-
-	public abstract void handler(DatagramPacket packet);
+	
+    public synchronized void send(byte[] message) {  
+        try {
+        	DatagramPacket packet = new DatagramPacket(message, message.length, address, port);
+			socket.send(packet);
+		} catch (Exception e) {
+			e.getMessage();
+			e.printStackTrace();
+		}
+    }
 
 }

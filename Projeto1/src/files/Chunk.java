@@ -14,7 +14,7 @@ public class Chunk {
 
 	private byte[] body;
 	
-	private ArrayList<Integer> peersID =  new ArrayList<>();
+	private ArrayList<String> peersID =  new ArrayList<>();
 	
 
 	public Chunk(int chunkNo, String fileID, int replicationDegree, byte[] body) {
@@ -96,12 +96,12 @@ public class Chunk {
 		return MAX_SIZE;
 	}
 	
-	public void addPeer(int PeerID) {
+	public void addPeer(String PeerID) {
 		if(!peersID.contains(PeerID))
 			peersID.add(PeerID);
 	}
 	
-	public void removePeer(int PeerID) {
+	public void removePeer(String PeerID) {
 		peersID.remove(PeerID);
 	}
 	

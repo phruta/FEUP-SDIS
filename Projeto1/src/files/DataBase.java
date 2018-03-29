@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 
 public class DataBase {
-    private ArrayList<Chunk> chunks = new ArrayList<Chunk>();
-    private HashMap<String, File> restorableFiles = new HashMap<String, File>();
+    private volatile ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+    private volatile HashMap<String, RestorableFileInfo> restorableFiles = new HashMap<>();
 
 	public DataBase() {
 		super();
@@ -33,7 +33,7 @@ public class DataBase {
 		return chunks.remove(tempChunk);
 	}
 	
-	public synchronized boolean addChunkPeerID(int chunkNo, String fileID, int peerID) {
+	public synchronized boolean addChunkPeerID(int chunkNo, String fileID, String peerID) {
 		Chunk tempChunk = new Chunk(chunkNo,fileID);
 		for(Chunk chunk:chunks) {
 			if(chunk.equals(tempChunk)) {
@@ -44,7 +44,7 @@ public class DataBase {
 		return false;
 	}
 	
-	public synchronized boolean removeChunkPeerID(int chunkNo, String fileID, int peerID) {
+	public synchronized boolean removeChunkPeerID(int chunkNo, String fileID, String peerID) {
 		Chunk tempChunk = new Chunk(chunkNo,fileID);
 		for(Chunk chunk:chunks) {
 			if(chunk.equals(tempChunk)) {
@@ -75,7 +75,7 @@ public class DataBase {
 		return -1;
 	}
 	
-	public synchronized void addRestorableFile(String fileID,File fileInfo) {
+	public synchronized void addRestorableFile(String fileID,RestorableFileInfo fileInfo) {
 		restorableFiles.put(fileID, fileInfo);
 	}
 	
@@ -87,9 +87,15 @@ public class DataBase {
 		return restorableFiles.containsKey(fileID);
 	}
 	
-	public synchronized File getRestorableFileInformation(String fileID) {
+	public synchronized RestorableFileInfo getRestorableFileInformation(String fileID) {
 		return restorableFiles.get(fileID);
 	}
 	
+	public synchronized boolean addChunkPeer_RetorableFile(int chunkNo, String fileID, String PeerID) {
+			return restorableFiles.get(fileID).addChunk_Peer(chunkNo, PeerID);
+	}
 	
+	public  synchronized int getChunkPeerSize_RetorableFile(int chunkNo, String fileID) {
+		return restorableFiles.get(fileID).getChunk_PeerSize(chunkNo);
+	}
 }

@@ -5,7 +5,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
 import files.DataBase;
+import files.DiskSpace;
 import multicastChannels.*;
+
 
 
 public class Peer extends PeerInterfaceImplementation {
@@ -23,13 +25,14 @@ public class Peer extends PeerInterfaceImplementation {
 	public final static int MDB_CHANNEL = 1;
 	public final static int MDR_CHANNEL = 2;
 	
-
-	private static volatile Integer PeerID;
-	private static volatile String version;
-	private static String accessPoint;
-	private static Channel[] MulticastChannels= new Channel[3];
-	private static volatile DataBase db;
+	public static volatile DataBase db;
+	public static volatile DiskSpace ds;
+	public static volatile String peerID;
+	public static volatile String version;
 	
+	public static Channel[] MulticastChannels= new Channel[3];
+	
+	private static String accessPoint;
 
 	public static void main(String[] args) {
 		if (!validArgs(args))
@@ -38,14 +41,20 @@ public class Peer extends PeerInterfaceImplementation {
 		if(!loadRMI())
 			return;
 		loadDatabase();
+		loadDiskSpace();
 		
 		new Thread(MulticastChannels[0]).start();
 		new Thread(MulticastChannels[1]).start();
 		new Thread(MulticastChannels[2]).start();
+		
 		System.err.println("Server ready"); 
         
 	}
 	
+	private static void loadDiskSpace() {
+		ds= new DiskSpace();		
+	}
+
 	private static void loadDatabase() {
 		db= new DataBase();
 	}
@@ -78,7 +87,7 @@ public class Peer extends PeerInterfaceImplementation {
 				return false;
 			}
 			
-			PeerID=Integer.parseInt(args[SERVER_ID]);
+			peerID=args[SERVER_ID];
 			version=args[PROTOCOL_VERSION];
 			accessPoint= args[ACCESS_POINT];
 			
