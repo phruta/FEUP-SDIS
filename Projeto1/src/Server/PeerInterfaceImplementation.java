@@ -3,12 +3,13 @@ package Server;
 import java.io.File;
 import java.rmi.RemoteException;
 
+import protocol.Backup;
+
 public class PeerInterfaceImplementation implements PeerInterface {
 
 	@Override
 	public void backup(File file, int replicationDeg) throws RemoteException {
-		System.out.println(file.toString()+ "\n" + Integer.toString(replicationDeg));
-		return;
+		new Thread(new Backup(file, replicationDeg)).start();
 		
 	}
 

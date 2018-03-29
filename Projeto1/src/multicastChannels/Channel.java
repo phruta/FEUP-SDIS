@@ -38,7 +38,7 @@ public abstract class Channel implements Runnable {
 
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 				socket.receive(packet);
-				new Thread(new MulticastHandler(packet));
+				new Thread(new MulticastHandler(packet)).start();
 			} catch (IOException e) {
 				e.getMessage();
 				e.printStackTrace();

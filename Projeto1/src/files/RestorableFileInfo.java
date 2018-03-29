@@ -51,7 +51,10 @@ public class RestorableFileInfo {
 	}
 	
 	public int getChunk_PeerSize(int chunkNo) {
-		return chunk_Peers.get(chunkNo).size()+1;
+		HashSet<String> temp;
+		if((temp=chunk_Peers.get(chunkNo))!=null)
+			return temp.size();
+		return 0;
 	}
 
 }

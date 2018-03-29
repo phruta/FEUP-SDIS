@@ -34,15 +34,13 @@ public class MulticastHandler implements Runnable {
 
 		if (header[SENDER_ID].equals(Peer.peerID))
 			return;
-
-		switch (header[MESSAGE_TYPE].toUpperCase()) {
-		case "PUTCHUNK":
+		
+		if(header[MESSAGE_TYPE].toUpperCase().equals("PUTCHUNK"))
 			handlePutchunk(header, header_body[BODY]);
-		case "STORED":
+		else if(header[MESSAGE_TYPE].toUpperCase().equals("STORED"))
 			handleStored(header);
-		default:
+		else
 			System.out.println("Not a valid Protocol");
-		}
 	}
 
 	private void handleStored(String[] header) {
@@ -71,7 +69,7 @@ public class MulticastHandler implements Runnable {
 	private void handlePutchunk(String[] header, String body) {
 		byte[] bodyData = body.getBytes();
 		
-		if (Peer.db.containsRestorableFile(header[FILE_ID])||bodyData.length<=Peer.ds.getSpaceLeft()) {
+		if (Peer.db.containsRestorableFile(header[FILE_ID])||bodyData.length>Peer.ds.getSpaceLeft()) {
 			return;
 		}
 		
