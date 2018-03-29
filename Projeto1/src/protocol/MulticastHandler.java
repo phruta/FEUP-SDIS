@@ -9,7 +9,7 @@ import Server.Peer;
 
 public class MulticastHandler implements Runnable {
 	public static final int HEADER = 0;
-	public static final int BODY = 0;
+	public static final int BODY = 1;
 
 	public static final int MESSAGE_TYPE = 0;
 	public static final int VERSION = 1;
@@ -50,12 +50,6 @@ public class MulticastHandler implements Runnable {
 			problem = Peer.db.addChunkPeer_RetorableFile(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
 					header[SENDER_ID]);
 		} else {
-			try {
-				Thread.sleep(400);
-			} catch (Exception e) {
-				e.getMessage();
-				e.printStackTrace();
-			}
 			if (Peer.db.hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) {
 				problem = Peer.db.addChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
 			}
