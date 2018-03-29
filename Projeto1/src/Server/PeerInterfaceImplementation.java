@@ -3,7 +3,8 @@ package Server;
 import java.io.File;
 import java.rmi.RemoteException;
 
-import protocol.Backup;
+import protocol.*;
+
 
 public class PeerInterfaceImplementation implements PeerInterface {
 
@@ -15,9 +16,8 @@ public class PeerInterfaceImplementation implements PeerInterface {
 
 	@Override
 	public void delete(File file) throws RemoteException {
-		System.out.println(file.toString());
-		return;
-		
+		new Thread(new Restore(file)).start();
+		return;	
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.net.*;
 
 import protocol.MulticastHandler;
 
+
 public abstract class Channel implements Runnable {
 	public static final int MAX_MESSAGE_SIZE = 65000;
 
@@ -55,5 +56,11 @@ public abstract class Channel implements Runnable {
 			e.printStackTrace();
 		}
     }
+    
+	public abstract void addRestoredChunk(String fileID, int chunkNo);
+	
+	public abstract boolean containsRestoredChunk(String fileID, int chunkNo);
+	
+	public abstract void removeRestoredChunk(String fileID, int chunkNo);
 
 }

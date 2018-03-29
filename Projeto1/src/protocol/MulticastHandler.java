@@ -3,8 +3,12 @@ package protocol;
 import java.net.DatagramPacket;
 import java.util.Random;
 
+import utils.Convert;
 import utils.HeaderCreater;
 import Server.Peer;
+import files.Chunk;
+import files.RestorableFileInfo;
+import files.RestoredFile;
 
 
 public class MulticastHandler implements Runnable {
@@ -39,8 +43,42 @@ public class MulticastHandler implements Runnable {
 			handlePutchunk(header, header_body[BODY]);
 		else if(header[MESSAGE_TYPE].toUpperCase().equals("STORED"))
 			handleStored(header);
+		else if(header[MESSAGE_TYPE].toUpperCase().equals("GETCHUNK")) 
+			handleGetChunk(header);
+		else if(header[MESSAGE_TYPE].toUpperCase().equals("CHUNK"))
+			handleChunk(header,header_body[BODY]);
 		else
 			System.out.println("Not a valid Protocol");
+	}
+
+	private void handleChunk(String[] header, String body) {
+		if (Peer.db.containsRestorableFile(header[FILE_ID])) {
+			if(!Peer.db.containsRestoredFile(header[FILE_ID])){
+				RestorableFileInfo rfi= Peer.db.getRestorableFileInformation(header[FILE_ID]);
+				Peer.db.addRestoredFile(rfi.getFileID(),rfi.getFileName());
+			}
+			RestoredFile to_add_chunk=Peer.db.getRestoredFile(header[FILE_ID]);
+			to_add_chunk.addData(Integer.parseInt(header[CHUNK_NO]), body);
+		}else {
+			Peer.MulticastChannels[Peer.MDR_CHANNEL].addRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]));
+		}
+
+	}
+
+	private void handleGetChunk(String[] header) {
+		if(!Peer.db.hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) 
+			return;
+		threadSleep();
+		
+		if(Peer.MulticastChannels[Peer.MDR_CHANNEL].containsRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]))){
+			Chunk tempChunk;
+			if((tempChunk=Peer.db.getChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]))==null){
+				System.out.println("Error: unexpected error ocurred");
+				return;
+			}
+			byte[] message= Convert.concatenateArrays(HeaderCreater.chunk(tempChunk.getFileID(),tempChunk.getChunkNo()), tempChunk.getData());
+			Peer.MulticastChannels[Peer.MDR_CHANNEL].send(message);
+		}
 	}
 
 	private void handleStored(String[] header) {
@@ -71,17 +109,20 @@ public class MulticastHandler implements Runnable {
 				Integer.parseInt(header[REPLICATION_DEG]), bodyData)) {
 			Peer.ds.addUsedSpace(bodyData.length);
 			
-			Random ran = new Random();
-			int sleepTime = ran.nextInt(401);
-			try {
-				Thread.sleep(sleepTime);
-			} catch (Exception e) {
-				e.getMessage();
-				e.printStackTrace();
-			}
+			threadSleep();
 			
 			Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.stored(header[FILE_ID], header[CHUNK_NO]));
 		}
 	}
 
+	private void threadSleep() {
+		Random ran = new Random();
+		int sleepTime = ran.nextInt(401);
+		try {
+			Thread.sleep(sleepTime);
+		} catch (Exception e) {
+			e.getMessage();
+			e.printStackTrace();
+		}
+	}
 }

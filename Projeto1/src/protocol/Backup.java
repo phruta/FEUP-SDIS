@@ -41,9 +41,7 @@ public class Backup implements Runnable{
 			}else {
 				chunkdata= new byte[0];
 			}
-			byte[] message= Convert.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);
-			Peer.MulticastChannels[Peer.MDB_CHANNEL].send(message);
-			
+			byte[] message= Convert.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);	
 
 			for(int j=1; j<TRYS_PUTCHUNK_NUMBER+1;j++) {
 				try {

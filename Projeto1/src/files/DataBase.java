@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class DataBase {
     private volatile ArrayList<Chunk> chunks = new ArrayList<Chunk>();
     private volatile HashMap<String, RestorableFileInfo> restorableFiles = new HashMap<>();
+    private volatile ArrayList<RestoredFile> filesRestored = new ArrayList<>();
 
 	public DataBase() {
 		super();
@@ -55,6 +56,17 @@ public class DataBase {
 		return false;
 	}
 	
+	public synchronized Chunk getChunk(int chunkNo, String fileID) {
+		Chunk tempChunk = new Chunk(chunkNo,fileID);
+		for(Chunk chunk:chunks) {
+			if(chunk.equals(tempChunk)) {
+				return chunk;
+			}
+		}
+		return null;
+	}
+	
+	
 	public synchronized int getChunkReplicationDegree(int chunkNo, String fileID) {
 		Chunk tempChunk = new Chunk(chunkNo,fileID);
 		for(Chunk chunk:chunks) {
@@ -97,5 +109,31 @@ public class DataBase {
 	
 	public  synchronized int getChunkPeerSize_RetorableFile(int chunkNo, String fileID) {
 		return restorableFiles.get(fileID).getChunk_PeerSize(chunkNo);
+	}
+	
+	public  synchronized RestorableFileInfo getRestorableFileByFilename(String filename) {
+		for (String key: restorableFiles.keySet()) {
+		    if(restorableFiles.get(key).getFileName().equals(filename))
+		    	return restorableFiles.get(key);
+		}
+		return null;
+	}
+	
+	public  synchronized boolean containsRestoredFile(String fileID) {
+		return filesRestored.contains(new RestoredFile(fileID));
+	}
+	
+	public  synchronized boolean addRestoredFile(String fileID,String filename) {
+		return filesRestored.add(new RestoredFile(fileID,filename));
+	}
+	public  synchronized RestoredFile getRestoredFile(String fileID) {
+		for (RestoredFile rf: filesRestored) {
+		    if(rf.equals(new RestoredFile(fileID)))
+		    	return rf;
+		}
+		return null;
+	}
+	public synchronized boolean removeRestoredFile(RestoredFile file) {
+		return filesRestored.remove(file);
 	}
 }
