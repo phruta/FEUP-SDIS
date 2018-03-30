@@ -5,11 +5,11 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
-
+import java.util.Random;
 
 import Server.Peer;
 
-public class Convert {
+public class Utils {
 	public static byte[] concatenateArrays(byte[] header,byte[] body) {
 		byte[] combined = new byte[header.length + body.length];
 
@@ -43,5 +43,16 @@ public class Convert {
 			e.printStackTrace();
 		}
 		return data;
+	}
+	
+	public static void threadSleep(int time) {
+		Random ran = new Random();
+		int sleepTime = ran.nextInt(time);
+		try {
+			Thread.sleep(sleepTime);
+		} catch (Exception e) {
+			e.getMessage();
+			e.printStackTrace();
+		}
 	}
 }

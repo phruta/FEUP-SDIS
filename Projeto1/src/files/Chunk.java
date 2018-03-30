@@ -1,6 +1,6 @@
 package files;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class Chunk {
@@ -14,7 +14,7 @@ public class Chunk {
 
 	private byte[] body;
 	
-	private ArrayList<String> peersID =  new ArrayList<>();
+	private CopyOnWriteArrayList<String> peersID =  new CopyOnWriteArrayList<>();
 	
 
 	public Chunk(int chunkNo, String fileID, int replicationDegree, byte[] body) {
@@ -64,32 +64,23 @@ public class Chunk {
 		return chunkNo;
 	}
 
-	public void setChunkNo(int chunkNo) {
-		this.chunkNo = chunkNo;
-	}
 
 	public String getFileID() {
 		return fileID;
 	}
 
-	public void setFileID(String fileID) {
-		this.fileID = fileID;
-	}
 
 	public int getReplicationDegree() {
 		return replicationDegree;
 	}
 
-	public void setReplicationDegree(int replicationDegree) {
-		this.replicationDegree = replicationDegree;
-	}
 
 	public byte[] getData() {
 		return body;
 	}
-
-	public void setData(byte[] data) {
-		this.body = data;
+	
+	public int getDataSize() {
+		return body.length;
 	}
 
 	public static int getMaxSize() {

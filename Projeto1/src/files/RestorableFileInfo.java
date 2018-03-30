@@ -1,10 +1,11 @@
 package files;
 
-import java.util.HashMap;
+
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RestorableFileInfo {
-	private HashMap<Integer,HashSet<String>> chunk_Peers = new HashMap<>();
+	private ConcurrentHashMap<Integer,HashSet<String>> chunk_Peers = new ConcurrentHashMap<>();
 	private String fileID;
 	private String fileName;
 	private int replicationDegree;
@@ -24,14 +25,14 @@ public class RestorableFileInfo {
 		this.numChunks = numChunks;
 	}
 
-	public String getFileID() {
+	public  String getFileID() {
 		return fileID;
 	}
-	public String getFileName() {
+	public  String getFileName() {
 		return fileName;
 	}
 
-	public int getReplicationDegree() {
+	public  int getReplicationDegree() {
 		return replicationDegree;
 	}
 
@@ -39,7 +40,7 @@ public class RestorableFileInfo {
 		return numChunks;
 	}
 	
-	public boolean addChunk_Peer(int chunkNo, String PeerID) {
+	public synchronized boolean addChunk_Peer(int chunkNo, String PeerID) {
 		if(chunk_Peers.containsKey(chunkNo)) {
 			return chunk_Peers.get(chunkNo).add(PeerID);
 		}else {
@@ -50,11 +51,18 @@ public class RestorableFileInfo {
 		}
 	}
 	
-	public int getChunk_PeerSize(int chunkNo) {
+	public synchronized int getChunk_PeerSize(int chunkNo) {
 		HashSet<String> temp;
 		if((temp=chunk_Peers.get(chunkNo))!=null)
 			return temp.size();
 		return 0;
+	}
+
+	public synchronized boolean removeChunkPeer(int chunkNo, String peerID) {
+		if(chunk_Peers.containsKey(chunkNo)) {
+			return chunk_Peers.get(chunkNo).remove(peerID);
+		}
+		return false;
 	}
 
 }

@@ -2,14 +2,20 @@ package files;
 
 
 
-import java.util.HashMap;
+
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import Server.Peer;
+import utils.Pair;
 
 
 public class DataBase {
     private volatile CopyOnWriteArrayList<Chunk> chunks = new CopyOnWriteArrayList<>();
-    private volatile HashMap<String, RestorableFileInfo> restorableFiles = new HashMap<>();
+    private volatile ConcurrentHashMap<String, RestorableFileInfo> restorableFiles = new ConcurrentHashMap<>();
     private volatile CopyOnWriteArrayList<RestoredFile> filesRestored = new CopyOnWriteArrayList<>();
+    private volatile ConcurrentHashMap<Chunk,Boolean> removedPutChunks = new ConcurrentHashMap<>();
+    private volatile CopyOnWriteArrayList<Pair<String,Integer>> restoredChunks = new CopyOnWriteArrayList<>();
 
 	public DataBase() {
 		super();
@@ -38,6 +44,7 @@ public class DataBase {
 	public synchronized void removeChunksByFileID(String fileID) {
 		for(Chunk chunk:chunks) {
 			if(chunk.getFileID().equals(fileID)) {
+				Peer.ds.removeUsedSpace(chunk.getDataSize());
 				chunks.remove(chunk);
 			}
 		}
@@ -73,6 +80,33 @@ public class DataBase {
 			}
 		}
 		return null;
+	}
+	
+	public synchronized Pair<Integer,String> saveDiskSpaceRemove() {
+		for(Chunk chunk:chunks) {
+			if(chunk.getReplicationDegree()<chunk.peesrIDsSize()) {
+				return new Pair<Integer,String>(chunk.getChunkNo(),chunk.getFileID());
+			}
+		}
+		for(Chunk chunk:chunks) {
+			if(chunk.getReplicationDegree()==chunk.peesrIDsSize()) {
+				return new Pair<Integer,String>(chunk.getChunkNo(),chunk.getFileID());
+			}
+		}
+		if(!chunks.isEmpty())
+			return new Pair<Integer,String>(chunks.get(0).getChunkNo(),chunks.get(0).getFileID());
+		
+		return null;
+	}
+	
+	public synchronized int getChunkDataSize(int chunkNo, String fileID) {
+		Chunk tempChunk = new Chunk(chunkNo,fileID);
+		for(Chunk chunk:chunks) {
+			if(chunk.equals(tempChunk)) {
+				return chunk.getDataSize();
+			}
+		}
+		return 0;
 	}
 	
 	
@@ -116,6 +150,10 @@ public class DataBase {
 			return restorableFiles.get(fileID).addChunk_Peer(chunkNo, PeerID);
 	}
 	
+	public synchronized boolean removeChunkPeer_RetorableFile(int chunkNo, String fileID, String PeerID) {
+		return restorableFiles.get(fileID).removeChunkPeer(chunkNo, PeerID);
+	}
+	
 	public  synchronized int getChunkPeerSize_RetorableFile(int chunkNo, String fileID) {
 		return restorableFiles.get(fileID).getChunk_PeerSize(chunkNo);
 	}
@@ -145,4 +183,45 @@ public class DataBase {
 	public synchronized boolean removeRestoredFile(RestoredFile file) {
 		return filesRestored.remove(file);
 	}
+	
+	public synchronized void addChunkRemovedPutChunk(Chunk chunk) {
+		if(!removedPutChunks.containsKey(chunk))
+			this.removedPutChunks.put(chunk, false);
+	}
+	
+	public synchronized void setTrueChunkRemovedPutChunk(Chunk chunk) {
+		if(removedPutChunks.containsKey(chunk))
+			this.removedPutChunks.put(chunk, true);
+	}
+	
+	public synchronized void removeChunkRemovedPutChunk(Chunk chunk) {
+		removedPutChunks.remove(chunk);
+	}
+	
+	public void clearRemovedPutChunks() {
+		removedPutChunks=new ConcurrentHashMap<>();
+	}
+	
+	public void clearFilesRestored() {
+		filesRestored=new CopyOnWriteArrayList<>();
+	}
+	
+	public void clearRestoredChunks() {
+		restoredChunks=new CopyOnWriteArrayList<>();
+	}
+	
+	public synchronized void addRestoredChunk(String fileID, int chunkNo) {
+		if(!containsRestoredChunk(fileID,chunkNo))
+			restoredChunks.add(new Pair<String, Integer>(fileID,chunkNo));
+	}
+	
+	public synchronized boolean containsRestoredChunk(String fileID, int chunkNo) {
+		return restoredChunks.contains(new Pair<String, Integer>(fileID,chunkNo));
+	}
+	
+	public synchronized void removeRestoredChunk(String fileID, int chunkNo) {
+		restoredChunks.remove(new Pair<String, Integer>(fileID,chunkNo));
+	}
+	
+	
 }

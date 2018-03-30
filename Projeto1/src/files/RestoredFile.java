@@ -3,14 +3,14 @@ package files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-import utils.Convert;
+import utils.Utils;
 
 public class RestoredFile {
 	String fileID;
 	String fileName;
-	HashMap<Integer,byte[]> data = new HashMap<>();
+	ConcurrentHashMap<Integer,byte[]> data = new ConcurrentHashMap<>();
 	
 	public String getFileID() {
 		return fileID;
@@ -65,9 +65,9 @@ public class RestoredFile {
 	public synchronized boolean saveFile() {
 		byte[] file= new byte[0];
 		for(int i: data.keySet())
-			file = Convert.concatenateArrays(file, data.get(i));
+			file = Utils.concatenateArrays(file, data.get(i));
 		try {
-			File f= new File("../RestoredFiles/"+fileName);
+			File f= new File("./RestoredFiles/"+fileName);
 			f.getParentFile().mkdirs();
 			Files.write(f.toPath(), file);
 		} catch (IOException e) {

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import Server.Peer;
 import files.Chunk;
 import files.RestorableFileInfo;
-import utils.Convert;
+import utils.Utils;
 import utils.HeaderCreater;
 
 public class Backup implements Runnable{
@@ -22,9 +22,9 @@ public class Backup implements Runnable{
 
 	@Override
 	public void run() {
-		String fileId = Convert.getFileId(file);
+		String fileId = Utils.getFileId(file);
 			
-		byte[] data = Convert.getFileData(file);
+		byte[] data = Utils.getFileData(file);
 		
 		int numChunks= data.length/Chunk.MAX_SIZE + 1;
 		
@@ -41,15 +41,10 @@ public class Backup implements Runnable{
 			}else {
 				chunkdata= new byte[0];
 			}
-			byte[] message= Convert.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);	
+			byte[] message= Utils.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);	
 
 			for(int j=1; j<TRYS_PUTCHUNK_NUMBER+1;j++) {
-				try {
-					Thread.sleep(DEFAULT_SLEEP_TIME*j);
-				} catch (InterruptedException e) {
-					e.getMessage();
-					e.printStackTrace();
-				}
+				Utils.threadSleep(DEFAULT_SLEEP_TIME*j);
 				if(Peer.db.getChunkPeerSize_RetorableFile(i, fileId)<replicationDegree) {
 					Peer.MulticastChannels[Peer.MDB_CHANNEL].send(message);
 				}

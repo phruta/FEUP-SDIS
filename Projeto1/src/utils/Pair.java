@@ -42,11 +42,15 @@ public class Pair<L,R> {
 		return true;
 	}
 
-	public R getValue() {
+	public synchronized R getValue() {
 		return right;
 	}
 	
-	public L getKey() {
+	public synchronized void setValue(R right) {
+		this.right=right;
+	}
+	
+	public synchronized L getKey() {
 		return left;
 	}
 }

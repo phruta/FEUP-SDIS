@@ -93,15 +93,15 @@ public class Peer extends PeerInterfaceImplementation {
 			
 			InetAddress mcAddress = InetAddress.getByName(args[MC_ADDRESS]);
 			int mcPort = Integer.parseInt(args[MC_PORT]);
-			MulticastChannels[MC_CHANNEL]=new MC(mcAddress,mcPort);
+			MulticastChannels[MC_CHANNEL]=new Channel(mcAddress,mcPort);
 
 			InetAddress mdbAddress = InetAddress.getByName(args[MDB_ADDRESS]);
 			int mdbPort = Integer.parseInt(args[MDB_PORT]);
-			MulticastChannels[MDB_CHANNEL]=new MDB(mdbAddress,mdbPort);
+			MulticastChannels[MDB_CHANNEL]=new Channel(mdbAddress,mdbPort);
 
 			InetAddress mdrAddress = InetAddress.getByName(args[MDR_ADDRESS]);
 			int mdrPort = Integer.parseInt(args[MDR_PORT]);
-			MulticastChannels[MDR_CHANNEL]=new MDR(mdrAddress,mdrPort);
+			MulticastChannels[MDR_CHANNEL]=new Channel(mdrAddress,mdrPort);
 			
 			
 		} catch (Exception e) {

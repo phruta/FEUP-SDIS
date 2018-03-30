@@ -16,7 +16,7 @@ public class PeerInterfaceImplementation implements PeerInterface {
 
 	@Override
 	public void delete(File file) throws RemoteException {
-		new Thread(new Remove(file)).start();
+		new Thread(new Delete(file)).start();
 	}
 
 	@Override
@@ -26,8 +26,7 @@ public class PeerInterfaceImplementation implements PeerInterface {
 
 	@Override
 	public void reclaim(int space) throws RemoteException {
-		System.out.println(Integer.toString(space));
-		return;
+		new Thread(new Reclaim(space)).start();
 		
 	}
 

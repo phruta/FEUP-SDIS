@@ -5,7 +5,7 @@ import java.io.File;
 import Server.Peer;
 import files.RestorableFileInfo;
 import files.RestoredFile;
-import utils.Convert;
+import utils.Utils;
 import utils.HeaderCreater;
 
 public class Restore implements Runnable{
@@ -17,7 +17,7 @@ public class Restore implements Runnable{
 	}
 	@Override
 	public void run() {
-		fileID = Convert.getFileId(file);
+		fileID = Utils.getFileId(file);
 		RestorableFileInfo fileToRestore;
 		
 		if((fileToRestore=Peer.db.getRestorableFileInformation(fileID))==null) {
@@ -36,9 +36,9 @@ public class Restore implements Runnable{
 		for (int i=0; i<fileToRestore.getNumChunks();i++) {
 			byte[] message= HeaderCreater.getChunk(fileID, i);
 			Peer.MulticastChannels[Peer.MC_CHANNEL].send(message);
-			threadSleep(50);
+			Utils.threadSleep(50);
 		}
-		threadSleep(1000);
+		Utils.threadSleep(1000);
 		
 		
 		RestoredFile restoredFile=Peer.db.getRestoredFile(fileID);
@@ -51,18 +51,11 @@ public class Restore implements Runnable{
 					System.out.print("ERROR: Couldn't remove file from database");
 				return;
 			}
-		threadSleep(1000);		
+		Utils.threadSleep(1000);		
 		}
 		System.out.print("ERROR: Couldn't restore the file properly, try again");
 	}
 	
-	private void threadSleep(long milliseconds) {
-		try {
-			Thread.sleep(milliseconds);
-		} catch (InterruptedException e) {
-			e.getMessage();
-			e.printStackTrace();
-		}
-	}
+	
 
 }
