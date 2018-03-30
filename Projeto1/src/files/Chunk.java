@@ -83,6 +83,11 @@ public class Chunk {
 		return body.length;
 	}
 
+	@Override
+	public String toString() {
+		return "Chunk [chunkNo=" + Integer.toString(chunkNo)+ ", fileID=" + fileID + ", perceived replication degree=" + Integer.toString(peersID.size())+ "]";
+	}
+
 	public static int getMaxSize() {
 		return MAX_SIZE;
 	}

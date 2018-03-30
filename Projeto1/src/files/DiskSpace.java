@@ -1,6 +1,8 @@
 package files;
 
 public class DiskSpace {
+	
+
 	private static final int DEFAULT_CAPACITY = 8000000;
 	
 	private volatile int capacitySpace;
@@ -38,6 +40,11 @@ public class DiskSpace {
 	
 	public synchronized void removeUsedSpace(int usedSpace) {
 		this.usedSpace -= usedSpace;
+	}
+	
+	@Override
+	public String toString() {
+		return "DiskSpace [capacitySpace=" + Integer.toString(capacitySpace) + ", usedSpace=" + Integer.toString(usedSpace) + "]";
 	}
 	
 }

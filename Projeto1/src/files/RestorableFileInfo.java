@@ -14,8 +14,12 @@ public class RestorableFileInfo {
 	
 	@Override
 	public String toString() {
-		return "FileInfo [fileID=" + fileID + ", replicationDegree=" + replicationDegree + ", numChunks=" + numChunks
-				+ "]";
+		String str = "File [fileID=" + fileID + ", desired replication degree=" + Integer.toString(replicationDegree) + ", numChunks=" + Integer.toString(numChunks)
+				+ "]\n";
+		for(Integer i: chunk_Peers.keySet()) {
+			str += "[chunkNo=" + Integer.toString(i)+ ", perceived replication degree=" + Integer.toString(chunk_Peers.get(i).size())+ "]\n";
+		}
+		return str;
 	}
 
 	public RestorableFileInfo(String fileID, String fileName, int replicationDegree, int numChunks) {

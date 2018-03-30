@@ -226,6 +226,19 @@ public class DataBase {
 	public synchronized void removeRestoredChunk(String fileID, int chunkNo) {
 		restoredChunks.remove(new Pair<String, Integer>(fileID,chunkNo));
 	}
+
+	@Override
+	public String toString() {
+		String str="Files whose backup this Peer has initiated:";
+		for(String i: restorableFiles.keySet())
+			str+="\n"+restorableFiles.get(i).toString();
+		str+="\n\nStored Chunks:\n";
+		
+		for(Chunk i: chunks)
+			str+=i.toString()+"\n";
+		return str;
+	}
+	
 	
 	
 }
