@@ -32,7 +32,7 @@ public class MulticastHandler implements Runnable {
 	@Override
 	public void run() {
 		String data = new String(packet.getData(), packet.getOffset(), packet.getLength());
-		;
+		
 		String[] header_body = data.split(HeaderCreater.CRLF + HeaderCreater.CRLF, 2);
 		String[] header = header_body[HEADER].split(" ");
 
@@ -47,18 +47,24 @@ public class MulticastHandler implements Runnable {
 			handleGetChunk(header);
 		else if(header[MESSAGE_TYPE].toUpperCase().equals("CHUNK"))
 			handleChunk(header,header_body[BODY]);
+		else if(header[MESSAGE_TYPE].toUpperCase().equals("DELETE"))
+			handleDelete(header);
 		else
 			System.out.println("Not a valid Protocol");
 	}
 
+	private void handleDelete(String[] header) {
+		Peer.db.removeRestorableFile(header[FILE_ID]);
+		Peer.db.removeChunksByFileID(header[FILE_ID]);
+		return;
+	}
+
 	private void handleChunk(String[] header, String body) {
 		if (Peer.db.containsRestorableFile(header[FILE_ID])) {
-			if(!Peer.db.containsRestoredFile(header[FILE_ID])){
-				RestorableFileInfo rfi= Peer.db.getRestorableFileInformation(header[FILE_ID]);
-				Peer.db.addRestoredFile(rfi.getFileID(),rfi.getFileName());
-			}
+			if(Peer.db.containsRestoredFile(header[FILE_ID])){	
 			RestoredFile to_add_chunk=Peer.db.getRestoredFile(header[FILE_ID]);
 			to_add_chunk.addData(Integer.parseInt(header[CHUNK_NO]), body);
+			}
 		}else {
 			Peer.MulticastChannels[Peer.MDR_CHANNEL].addRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]));
 		}
@@ -70,7 +76,7 @@ public class MulticastHandler implements Runnable {
 			return;
 		threadSleep();
 		
-		if(Peer.MulticastChannels[Peer.MDR_CHANNEL].containsRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]))){
+		if(!Peer.MulticastChannels[Peer.MDR_CHANNEL].containsRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]))){
 			Chunk tempChunk;
 			if((tempChunk=Peer.db.getChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]))==null){
 				System.out.println("Error: unexpected error ocurred");
@@ -81,20 +87,14 @@ public class MulticastHandler implements Runnable {
 		}
 	}
 
-	private void handleStored(String[] header) {
-		boolean problem = true;
-		
+	private void handleStored(String[] header) {	
 		if (Peer.db.containsRestorableFile(header[FILE_ID])) {
-			problem = Peer.db.addChunkPeer_RetorableFile(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
+			Peer.db.addChunkPeer_RetorableFile(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
 					header[SENDER_ID]);
 		} else {
 			if (Peer.db.hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) {
-				problem = Peer.db.addChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
+				Peer.db.addChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
 			}
-		}
-
-		if (!problem) {
-			System.out.println("An Expected Error ocurred handling Stored message");
 		}
 	}
 

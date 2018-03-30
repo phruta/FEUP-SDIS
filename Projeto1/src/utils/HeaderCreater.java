@@ -8,7 +8,8 @@ public class HeaderCreater {
 	private static final String PUTCHUNK = "PUTCHUNK";
 	private static final String STORED = "STORED";
 	private static final String GETCHUNK = "GETCHUNK";
-	private static final String CHUNK = "GETCHUNK";
+	private static final String CHUNK = "CHUNK";
+	private static final String DELETE = "DELETE";
 
 	public static byte[] putChunk(String fileId, int chunkNo, int replicationDeg) {
 		String Header = PUTCHUNK + SPACE + Peer.version + SPACE + Peer.peerID + SPACE + fileId + SPACE
@@ -34,6 +35,12 @@ public class HeaderCreater {
 	public static byte[] chunk(String fileId, int chunkNo) {
 		String Header = CHUNK + SPACE + Peer.version + SPACE + Peer.peerID + SPACE + fileId + SPACE
 				+ Integer.toString(chunkNo) + SPACE + CRLF + CRLF;
+
+		return Header.getBytes();
+	}
+	
+	public static byte[] delete(String fileId) {
+		String Header = DELETE + SPACE + Peer.version + SPACE + Peer.peerID + SPACE + fileId + SPACE + CRLF + CRLF;
 
 		return Header.getBytes();
 	}

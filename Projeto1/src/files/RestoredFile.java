@@ -67,7 +67,9 @@ public class RestoredFile {
 		for(int i: data.keySet())
 			file = Convert.concatenateArrays(file, data.get(i));
 		try {
-			Files.write(new File("../RestoredFiles/"+fileName).toPath(), file);
+			File f= new File("../RestoredFiles/"+fileName);
+			f.getParentFile().mkdirs();
+			Files.write(f.toPath(), file);
 		} catch (IOException e) {
 			e.getMessage();
 			e.printStackTrace();

@@ -16,15 +16,12 @@ public class PeerInterfaceImplementation implements PeerInterface {
 
 	@Override
 	public void delete(File file) throws RemoteException {
-		new Thread(new Restore(file)).start();
-		return;	
+		new Thread(new Remove(file)).start();
 	}
 
 	@Override
 	public void restore(File file) throws RemoteException {
-		System.out.println(file.toString());
-		return;
-
+		new Thread(new Restore(file)).start();
 	}
 
 	@Override

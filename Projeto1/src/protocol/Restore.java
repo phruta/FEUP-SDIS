@@ -30,6 +30,8 @@ public class Restore implements Runnable{
 		}
 
 		
+		RestorableFileInfo rfi= Peer.db.getRestorableFileInformation(fileID);
+		Peer.db.addRestoredFile(rfi.getFileID(),rfi.getFileName());
 		
 		for (int i=0; i<fileToRestore.getNumChunks();i++) {
 			byte[] message= HeaderCreater.getChunk(fileID, i);
@@ -37,6 +39,8 @@ public class Restore implements Runnable{
 			threadSleep(50);
 		}
 		threadSleep(1000);
+		
+		
 		RestoredFile restoredFile=Peer.db.getRestoredFile(fileID);
 		
 		for(int i=0; i<3;i++) {

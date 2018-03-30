@@ -1,14 +1,15 @@
 package files;
 
 
-import java.util.ArrayList;
+
 import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class DataBase {
-    private volatile ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+    private volatile CopyOnWriteArrayList<Chunk> chunks = new CopyOnWriteArrayList<>();
     private volatile HashMap<String, RestorableFileInfo> restorableFiles = new HashMap<>();
-    private volatile ArrayList<RestoredFile> filesRestored = new ArrayList<>();
+    private volatile CopyOnWriteArrayList<RestoredFile> filesRestored = new CopyOnWriteArrayList<>();
 
 	public DataBase() {
 		super();
@@ -32,6 +33,14 @@ public class DataBase {
 	public synchronized boolean removeChunk(int chunkNo, String fileID) {
 		Chunk tempChunk = new Chunk(chunkNo,fileID);
 		return chunks.remove(tempChunk);
+	}
+	
+	public synchronized void removeChunksByFileID(String fileID) {
+		for(Chunk chunk:chunks) {
+			if(chunk.getFileID().equals(fileID)) {
+				chunks.remove(chunk);
+			}
+		}
 	}
 	
 	public synchronized boolean addChunkPeerID(int chunkNo, String fileID, String peerID) {

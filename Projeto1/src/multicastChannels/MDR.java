@@ -2,8 +2,7 @@ package multicastChannels;
 
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import utils.Pair;
 
@@ -11,7 +10,7 @@ import utils.Pair;
 
 
 public class MDR extends Channel {
-	private volatile ArrayList<Pair<String,Integer>> restoredChunks = new ArrayList<>();
+	private volatile CopyOnWriteArrayList<Pair<String,Integer>> restoredChunks = new CopyOnWriteArrayList<>();
 	
 	public MDR(InetAddress address, int port) {
 		super(address, port);
