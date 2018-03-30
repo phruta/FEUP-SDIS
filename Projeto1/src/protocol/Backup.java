@@ -22,8 +22,10 @@ public class Backup implements Runnable{
 
 	@Override
 	public void run() {
+		
 		String fileId = Utils.getFileId(file);
-			
+		System.out.println("Sending PutChunks for File id: " +fileId);
+		
 		byte[] data = Utils.getFileData(file);
 		
 		int numChunks= data.length/Chunk.MAX_SIZE + 1;
@@ -42,7 +44,7 @@ public class Backup implements Runnable{
 				chunkdata= new byte[0];
 			}
 			byte[] message= Utils.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);	
-
+	
 			for(int j=1; j<TRYS_PUTCHUNK_NUMBER+1;j++) {
 				Utils.threadSleep(DEFAULT_SLEEP_TIME*j);
 				if(Peer.db.getChunkPeerSize_RetorableFile(i, fileId)<replicationDegree) {

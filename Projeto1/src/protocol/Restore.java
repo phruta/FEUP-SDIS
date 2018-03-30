@@ -18,6 +18,7 @@ public class Restore implements Runnable{
 	@Override
 	public void run() {
 		fileID = Utils.getFileId(file);
+		System.out.println("Restoring file with the file id: " +fileID);
 		RestorableFileInfo fileToRestore;
 		
 		if((fileToRestore=Peer.db.getRestorableFileInformation(fileID))==null) {

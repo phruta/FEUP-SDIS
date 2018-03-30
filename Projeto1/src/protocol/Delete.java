@@ -20,6 +20,7 @@ public class Delete implements Runnable {
 		Peer.db.removeChunksByFileID(fileID);
 		
 		Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.delete(fileID));
+		System.out.println("Deleted File with the File ID: " +fileID);
 	}
 
 }

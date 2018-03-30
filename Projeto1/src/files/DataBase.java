@@ -194,6 +194,10 @@ public class DataBase {
 			this.removedPutChunks.put(chunk, true);
 	}
 	
+	public synchronized boolean getChunkRemovedPutChunk(Chunk chunk) {
+		return this.removedPutChunks.get(chunk);
+	}
+	
 	public synchronized void removeChunkRemovedPutChunk(Chunk chunk) {
 		removedPutChunks.remove(chunk);
 	}
