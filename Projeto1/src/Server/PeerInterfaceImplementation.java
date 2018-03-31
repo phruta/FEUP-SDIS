@@ -31,9 +31,8 @@ public class PeerInterfaceImplementation implements PeerInterface {
 	}
 
 	@Override
-	public String state() throws RemoteException {
-		System.out.println("state working");
-		return "lol";
+	public void state() throws RemoteException {
+		new Thread(new State()).start();
 	}
 
 

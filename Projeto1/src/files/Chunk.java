@@ -85,7 +85,7 @@ public class Chunk {
 
 	@Override
 	public String toString() {
-		return "Chunk [chunkNo=" + Integer.toString(chunkNo)+ ", fileID=" + fileID + ", perceived replication degree=" + Integer.toString(peersID.size())+ "]";
+		return "Chunk [chunkNo=" + Integer.toString(chunkNo)+ ", fileID=" + fileID + ", perceived replication degree=" + Integer.toString(peesrIDsSize())+ "]";
 	}
 
 	public static int getMaxSize() {
@@ -102,6 +102,6 @@ public class Chunk {
 	}
 	
 	public int peesrIDsSize() {
-		return peersID.size();
+		return peersID.size()+1;
 	}
 }

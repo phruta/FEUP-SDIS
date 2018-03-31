@@ -1,6 +1,7 @@
 package protocol;
 
 import java.net.DatagramPacket;
+import java.nio.charset.Charset;
 
 import utils.Utils;
 import utils.HeaderCreater;
@@ -29,9 +30,10 @@ public class MulticastHandler extends MessageType implements Runnable {
 
 	@Override
 	public void run() {
-		String data = new String(packet.getData(), packet.getOffset(), packet.getLength());
-
+		String data = new String(packet.getData(), packet.getOffset(), packet.getLength(),Charset.forName("ISO_8859_1"));
+		
 		String[] header_body = data.split(HeaderCreater.CRLF + HeaderCreater.CRLF, 2);
+		System.out.println("received message with the header: " + header_body[HEADER]);
 		String[] header = header_body[HEADER].split(" ");
 
 		if (header[SENDER_ID].equals(Peer.peerID))

@@ -9,8 +9,4 @@ public class MessageType {
 	protected static final String DELETE = "DELETE";
 	protected static final String REMOVED = "REMOVED";
 
-	public MessageType() {
-		super();
-	}
-
 }

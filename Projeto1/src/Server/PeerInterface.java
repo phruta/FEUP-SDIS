@@ -8,5 +8,5 @@ public interface PeerInterface extends Remote {
     void delete(File file) throws RemoteException;
     void restore(File file) throws RemoteException;
     void reclaim(int space) throws RemoteException;
-    String state() throws  RemoteException;
+    void state() throws  RemoteException;
 }
