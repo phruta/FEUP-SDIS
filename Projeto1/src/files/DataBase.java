@@ -3,6 +3,7 @@ package files;
 
 
 
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -10,8 +11,13 @@ import Server.Peer;
 import utils.Pair;
 
 
-public class DataBase {
-    private volatile CopyOnWriteArrayList<Chunk> chunks = new CopyOnWriteArrayList<>();
+public class DataBase implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7778786538094336934L;
+	
+	private volatile CopyOnWriteArrayList<Chunk> chunks = new CopyOnWriteArrayList<>();
     private volatile ConcurrentHashMap<String, RestorableFileInfo> restorableFiles = new ConcurrentHashMap<>();
     private volatile CopyOnWriteArrayList<RestoredFile> filesRestored = new CopyOnWriteArrayList<>();
     private volatile ConcurrentHashMap<Chunk,Boolean> removedPutChunks = new ConcurrentHashMap<>();
@@ -38,6 +44,7 @@ public class DataBase {
 	
 	public synchronized boolean removeChunk(int chunkNo, String fileID) {
 		Chunk tempChunk = new Chunk(chunkNo,fileID);
+		tempChunk.removeBodyData();
 		return chunks.remove(tempChunk);
 	}
 	
@@ -45,6 +52,7 @@ public class DataBase {
 		for(Chunk chunk:chunks) {
 			if(chunk.getFileID().equals(fileID)) {
 				Peer.ds.removeUsedSpace(chunk.getDataSize());
+				chunk.removeBodyData();
 				chunks.remove(chunk);
 			}
 		}

@@ -1,7 +1,12 @@
 package files;
 
-public class DiskSpace {
-	
+import java.io.Serializable;
+
+public class DiskSpace implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3654172505116195725L;
 
 	private static final int DEFAULT_CAPACITY = 8000000;
 	

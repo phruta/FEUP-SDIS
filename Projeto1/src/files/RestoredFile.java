@@ -2,12 +2,17 @@ package files;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.concurrent.ConcurrentHashMap;
 
 import utils.Utils;
 
-public class RestoredFile {
+public class RestoredFile implements Serializable {
+
+	private static final long serialVersionUID = 1266259725339627934L;
+	
 	String fileID;
 	String fileName;
 	ConcurrentHashMap<Integer,byte[]> data = new ConcurrentHashMap<>();
@@ -57,7 +62,7 @@ public class RestoredFile {
 	}
 
 	public synchronized void addData(int chunkNo, String body) {
-		data.put(chunkNo, body.getBytes());
+		data.put(chunkNo, body.getBytes(Charset.forName("ISO_8859_1")));
 	}
 	public synchronized int dataSize() {
 		return data.size();

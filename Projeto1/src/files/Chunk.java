@@ -1,9 +1,19 @@
 package files;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import Server.Peer;
+import utils.Utils;
 
-public class Chunk {
+
+public class Chunk implements Serializable {
+
+	private static final long serialVersionUID = -669885110003358924L;
+
 	public static final int MAX_SIZE = 64000;
 
 	private int chunkNo;
@@ -12,7 +22,9 @@ public class Chunk {
 
 	private int replicationDegree;
 
-	private byte[] body;
+	private int bodySize;
+	
+	private String pathToChunk;
 	
 	private CopyOnWriteArrayList<String> peersID =  new CopyOnWriteArrayList<>();
 	
@@ -22,7 +34,9 @@ public class Chunk {
 		this.chunkNo = chunkNo;
 		this.fileID = fileID;
 		this.replicationDegree = replicationDegree;
-		this.body = body;
+		this.bodySize = body.length;
+		this.pathToChunk="./Chunks/"+Peer.peerID+"-"+fileID+"-"+Integer.toString(chunkNo)+".chunk";
+		this.saveChunk(body);
 	}
 	
 	public Chunk(int chunkNo, String fileID) {
@@ -76,11 +90,12 @@ public class Chunk {
 
 
 	public byte[] getData() {
-		return body;
+			File f= new File(pathToChunk);
+			return Utils.getFileData(f);
 	}
 	
 	public int getDataSize() {
-		return body.length;
+		return bodySize;
 	}
 
 	@Override
@@ -103,5 +118,24 @@ public class Chunk {
 	
 	public int peesrIDsSize() {
 		return peersID.size()+1;
+	}
+	
+	private boolean saveChunk(byte[] data) {	
+		try {
+			File f= new File(pathToChunk);
+			f.getParentFile().mkdirs();
+			Files.write(f.toPath(), data);
+		} catch (IOException e) {
+			e.getMessage();
+			e.printStackTrace();
+			return false;
+		
+		}
+		return true;
+	}
+	
+	public boolean removeBodyData() {
+		File f= new File(pathToChunk);
+		return f.delete();
 	}
 }

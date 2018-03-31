@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.Random;
 
 import Server.Peer;
@@ -24,14 +23,19 @@ public class Utils {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hash = digest.digest(fileInfo.getBytes(StandardCharsets.UTF_8));
-			String encoded = Base64.getEncoder().encodeToString(hash);
-			return encoded;
+			StringBuffer result = new StringBuffer();
+		   
+			for (byte b : hash) 
+		    	result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+			
+			return result.toString();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 	}
+
 	
 	public static synchronized byte[] getFileData(File file) {
 		byte[] data = new byte[(int) file.length()];

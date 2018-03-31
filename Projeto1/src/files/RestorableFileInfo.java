@@ -1,10 +1,14 @@
 package files;
 
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RestorableFileInfo {
+public class RestorableFileInfo implements Serializable{
+
+	private static final long serialVersionUID = 5646836793796622676L;
+	
 	private ConcurrentHashMap<Integer,HashSet<String>> chunk_Peers = new ConcurrentHashMap<>();
 	private String fileID;
 	private String fileName;

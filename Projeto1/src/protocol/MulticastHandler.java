@@ -143,7 +143,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 	private void handlePutchunk(String[] header, String body) {
 		Peer.db.setTrueChunkRemovedPutChunk(new Chunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]));
 
-		byte[] bodyData = body.getBytes();
+		byte[] bodyData = body.getBytes(Charset.forName("ISO_8859_1"));
 
 		if (Peer.db.containsRestorableFile(header[FILE_ID]) || bodyData.length > Peer.ds.getSpaceLeft()) {
 			return;
