@@ -3,9 +3,7 @@ package Client;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
-import java.io.File;
 import java.lang.reflect.*;
-
 
 import utils.Pair;
 import Server.PeerInterface;
@@ -71,10 +69,7 @@ public class TestApp {
 	}
 
 	public static void callBackup() {
-		File file = getFile();
-		if (file==null)
-			return;
-
+		String file = args[PATH];
 		try {
 			int replicationDegree = Integer.parseInt(args[REPLICATION_DEGREE]);
 			stub.backup(file, replicationDegree);
@@ -86,9 +81,7 @@ public class TestApp {
 	}
 
 	public static void callRestore() {
-		File file = getFile();
-		if (file==null)
-			return;
+		String file = args[PATH];
 
 		try {
 			stub.restore(file);
@@ -99,9 +92,7 @@ public class TestApp {
 	}
 
 	public static void callDelete() {
-		File file = getFile();
-		if (file==null)
-			return;
+		String file = args[PATH];
 
 		try {
 			stub.delete(file);
@@ -128,17 +119,6 @@ public class TestApp {
 			e.getMessage();
 			e.printStackTrace();
 		}
-	}
-
-	private static File getFile() {
-		File file = new File(args[PATH]);
-
-		if (!file.exists() || !file.isFile()) {
-			System.out.println("ERROR: The path you indicated is not a file");
-			return null;
-		}
-
-		return file;
 	}
 
 }
