@@ -5,6 +5,7 @@ import java.net.*;
 
 import protocol.MulticastHandler;
 
+
 public class Channel implements Runnable {
 	public static final int MAX_MESSAGE_SIZE = 65000;
 
@@ -45,15 +46,16 @@ public class Channel implements Runnable {
 			}
 		}
 	}
-
-	public synchronized void send(byte[] message) {
-		try {
-			DatagramPacket packet = new DatagramPacket(message, message.length, address, port);
+	
+    public synchronized void send(byte[] message) {  
+        try {
+        	DatagramPacket packet = new DatagramPacket(message, message.length, address, port);
 			socket.send(packet);
 		} catch (Exception e) {
 			e.getMessage();
 			e.printStackTrace();
 		}
-	}
+    }
+
 
 }

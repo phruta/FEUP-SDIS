@@ -1,14 +1,14 @@
 package utils;
 
-public class Pair<L, R> {
+public class Pair<L,R> {
 
-	private L left;
-	private R right;
+	private  L left;
+	private  R right;
 
 	public Pair(L left, R right) {
-		this.left = left;
-		this.right = right;
-	}
+	    this.left = left;
+	    this.right = right;
+	 }
 
 	@Override
 	public int hashCode() {
@@ -45,11 +45,11 @@ public class Pair<L, R> {
 	public synchronized R getValue() {
 		return right;
 	}
-
+	
 	public synchronized void setValue(R right) {
-		this.right = right;
+		this.right=right;
 	}
-
+	
 	public synchronized L getKey() {
 		return left;
 	}
