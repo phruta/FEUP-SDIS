@@ -28,7 +28,7 @@ public class Utils {
 			for (byte b : hash) 
 		    	result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
 			
-			return result.toString();
+			return result.toString().toUpperCase();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
