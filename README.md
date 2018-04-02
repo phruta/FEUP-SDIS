@@ -36,6 +36,8 @@ java Client.TestApp <Access Point> delete <file path>
 java Client.TestApp <Access Point> reclaim <amount of space>
 java Client.TestApp <Access Point> state
   
+**Importante: O programa foi testado em windows, não foram feitos testes em linux.**    
+  
 ## Notas
 Pastas como Databases, Chunks e RestoredFiles serão criadas durante a execução destes programas se quisermos dar reset a todas as informações do Peer<ID> é necessário apagar as mesmas.
   
@@ -45,5 +47,4 @@ O "File Path" necessários em alguns dos comandos pode ser relativo ou absoluto.
 After having built the project with eclipse, open a Terminal in the bin folder resultant of the build process. You can then launch a peer or issue a command with the trigger.
 
 O argumento amount of space no caso do TestApp reclaim é indicador da capacidade/tamanho de disco que queremos que o Peer<ID> tenha.
-  
-**Importante: O programa foi testado em windows, não foram feitos testes em linux.**  
+
