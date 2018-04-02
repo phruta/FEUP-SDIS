@@ -2,6 +2,8 @@ package protocol;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import Server.Peer;
 import files.Chunk;
@@ -10,13 +12,14 @@ import utils.Utils;
 import utils.HeaderCreater;
 
 public class Backup implements Runnable{
-	private static final int DEFAULT_SLEEP_TIME = 1000;
 	private File file;
 	private int replicationDegree;
+	private ExecutorService threadpool;
 
 	public Backup(File file, int replicationDegree) {
 		this.file = file;
 		this.replicationDegree = replicationDegree;
+		threadpool=Executors.newFixedThreadPool(16);
 	}
 
 	@Override
@@ -44,10 +47,8 @@ public class Backup implements Runnable{
 			}
 			byte[] message= Utils.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);	
 	
-			new Thread(new SendChunk(i, replicationDegree, fileId, message)).start();
-			if(i%16==0) {
-				Utils.threadSleep(DEFAULT_SLEEP_TIME);
-			}
+			threadpool.execute(new SendChunk(i, replicationDegree, fileId, message));
+			
 		}
 
 		Peer.saveDatabases();
