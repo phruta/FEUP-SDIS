@@ -27,14 +27,14 @@ public class Peer extends PeerInterfaceImplementation {
 	public final static int MC_CHANNEL = 0;
 	public final static int MDB_CHANNEL = 1;
 	public final static int MDR_CHANNEL = 2;
-	public final static String DATABASE_PATH="./Databases/";
+	public final static String DATABASE_PATH="../Databases/";
 	public final static String DS=".ds";
 	public final static String DB=".cdb";
 
-	public static volatile DataBase db;
-	public static volatile DiskSpace ds;
-	public static volatile String peerID;
-	public static volatile String version;
+	private static volatile DataBase db;
+	private static volatile DiskSpace ds;
+	private static volatile String peerID;
+	private static volatile String version;
 
 	public static Channel[] MulticastChannels = new Channel[3];
 
@@ -54,42 +54,28 @@ public class Peer extends PeerInterfaceImplementation {
 		new Thread(MulticastChannels[MDR_CHANNEL]).start();
 
 		System.err.println("Server ready");
-
-		Runtime.getRuntime().addShutdownHook(new Thread()
-        {
-            @Override
-            public void run()
-            {
-            	MulticastChannels[MC_CHANNEL].shutdown();
-            	MulticastChannels[MDB_CHANNEL].shutdown();
-            	MulticastChannels[MDR_CHANNEL].shutdown();
-
-                try {
-                	save(ds,DATABASE_PATH+peerID+DS);
-                	save(db,DATABASE_PATH+peerID+DB);
-                } catch (Exception e) {
-                    System.err.println("Error saving databases");
-                }
-                System.exit(0);
-            }
-        });
 	}
 
 	private static void loadDiskSpace() {
-		if((ds=(DiskSpace)load(DATABASE_PATH+peerID+DS))==null) {
-			ds = new DiskSpace();
-			save(ds,DATABASE_PATH+peerID+DS);
+		if((setDs((DiskSpace)load(DATABASE_PATH+getPeerID()+DS)))==null) {
+			setDs(new DiskSpace());
+			save(getDs(),DATABASE_PATH+getPeerID()+DS);
 		}
 	}
 
 	private static void loadDatabase() {
-		if((db=(DataBase)load(DATABASE_PATH+peerID+DB))==null) {
-			db = new DataBase();
-			save(db,DATABASE_PATH+peerID+DB);
+		if((setDb((DataBase)load(DATABASE_PATH+getPeerID()+DB)))==null) {
+			setDb(new DataBase());
+			save(getDb(),DATABASE_PATH+getPeerID()+DB);
 		}
-		db.clearFilesRestored();
-		db.clearRemovedPutChunks();
-		db.clearRestoredChunks();
+		getDb().clearFilesRestored();
+		getDb().clearRemovedPutChunks();
+		getDb().clearRestoredChunks();
+	}
+	
+	public synchronized static void saveDatabases() {
+		save(getDs(),DATABASE_PATH+getPeerID()+DS);
+    	save(getDb(),DATABASE_PATH+getPeerID()+DB);
 	}
 
 	private static boolean loadRMI() {
@@ -120,8 +106,8 @@ public class Peer extends PeerInterfaceImplementation {
 				return false;
 			}
 
-			peerID = args[SERVER_ID];
-			version = args[PROTOCOL_VERSION];
+			setPeerID(args[SERVER_ID]);
+			setVersion(args[PROTOCOL_VERSION]);
 			accessPoint = args[ACCESS_POINT];
 
 			InetAddress mcAddress = InetAddress.getByName(args[MC_ADDRESS]);
@@ -143,7 +129,7 @@ public class Peer extends PeerInterfaceImplementation {
 		return true;
 	}
 
-	public static void save(Object obj, String path) {
+	private static void save(Object obj, String path) {
 		try {
 			new File(path).getParentFile().mkdirs(); // if file already exists will do nothing 
 			FileOutputStream fileOut = new FileOutputStream(path);
@@ -157,7 +143,7 @@ public class Peer extends PeerInterfaceImplementation {
 		}
 	}
 
-	public static Object load(String path) {
+	private static Object load(String path) {
 
 		try {
 			FileInputStream fis = new FileInputStream(path);
@@ -170,5 +156,39 @@ public class Peer extends PeerInterfaceImplementation {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public static DataBase getDb() {
+		return db;
+	}
+
+	private static DataBase setDb(DataBase db) {
+		Peer.db = db;
+		return db;
+	}
+
+	public static DiskSpace getDs() {
+		return ds;
+	}
+
+	private static DiskSpace setDs(DiskSpace ds) {
+		Peer.ds = ds;
+		return ds;
+	}
+
+	public static String getPeerID() {
+		return peerID;
+	}
+
+	private static void setPeerID(String peerID) {
+		Peer.peerID = peerID;
+	}
+
+	public static String getVersion() {
+		return version;
+	}
+
+	private static void setVersion(String version) {
+		Peer.version = version;
 	}
 }

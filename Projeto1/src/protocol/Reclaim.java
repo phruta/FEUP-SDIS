@@ -14,15 +14,16 @@ public class Reclaim implements Runnable {
 
 	@Override
 	public void run() {
-		Peer.ds.setCapacitySpace(capacity);
+		Peer.getDs().setCapacitySpace(capacity);
 		System.out.println("The space is set to " +Integer.toString(capacity)+" removing chunks in the database if needed");
-		while(Peer.ds.getSpaceLeft()<0) {
-			Pair<Integer,String> temp= Peer.db.saveDiskSpaceRemove();
+		while(Peer.getDs().getSpaceLeft()<0) {
+			Pair<Integer,String> temp= Peer.getDb().saveDiskSpaceRemove();
 			Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.removed(temp.getValue(), temp.getKey()));
-			Peer.ds.removeUsedSpace(Peer.db.getChunkDataSize(temp.getKey(), temp.getValue()));
-			Peer.db.removeChunk(temp.getKey(), temp.getValue());
+			Peer.getDs().removeUsedSpace(Peer.getDb().getChunkDataSize(temp.getKey(), temp.getValue()));
+			Peer.getDb().removeChunk(temp.getKey(), temp.getValue());
 			System.out.println("Removed chunk\nFile id: " + temp.getValue()+ "\nChunk Number"+ temp.getKey().toString());
 		}
+		Peer.saveDatabases();
 	}
 
 }

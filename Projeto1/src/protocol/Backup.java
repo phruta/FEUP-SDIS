@@ -30,7 +30,7 @@ public class Backup implements Runnable{
 		
 		int numChunks= data.length/Chunk.MAX_SIZE + 1;
 		
-		Peer.db.addRestorableFile(fileId, 
+		Peer.getDb().addRestorableFile(fileId, 
 				new RestorableFileInfo(fileId,file.getName(),replicationDegree, numChunks));
 		
 		for (int i=0; i<numChunks;i++) {
@@ -47,12 +47,13 @@ public class Backup implements Runnable{
 	
 			for(int j=1; j<TRYS_PUTCHUNK_NUMBER+1;j++) {
 				Utils.threadSleep(DEFAULT_SLEEP_TIME*j);
-				if(Peer.db.getChunkPeerSize_RetorableFile(i, fileId)<replicationDegree) {
+				if(Peer.getDb().getChunkPeerSize_RetorableFile(i, fileId)<replicationDegree) {
 					Peer.MulticastChannels[Peer.MDB_CHANNEL].send(message);
 				}
 				else break;
 			}
 		}
+		Peer.saveDatabases();
 		return;
 	}
 	

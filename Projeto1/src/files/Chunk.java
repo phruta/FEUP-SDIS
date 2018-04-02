@@ -35,7 +35,7 @@ public class Chunk implements Serializable {
 		this.fileID = fileID;
 		this.replicationDegree = replicationDegree;
 		this.bodySize = body.length;
-		this.pathToChunk="./Chunks/"+Peer.peerID+"-"+fileID+"-"+Integer.toString(chunkNo)+".chunk";
+		this.pathToChunk="../Chunks/"+Peer.getPeerID()+"-"+fileID+"-"+Integer.toString(chunkNo)+".chunk";
 		this.saveChunk(body);
 	}
 	
@@ -43,6 +43,7 @@ public class Chunk implements Serializable {
 		super();
 		this.chunkNo = chunkNo;
 		this.fileID = fileID;
+		this.pathToChunk="./Chunks/"+Peer.getPeerID()+"-"+fileID+"-"+Integer.toString(chunkNo)+".chunk";
 	}
 
 

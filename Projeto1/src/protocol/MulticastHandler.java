@@ -30,13 +30,14 @@ public class MulticastHandler extends MessageType implements Runnable {
 
 	@Override
 	public void run() {
-		String data = new String(packet.getData(), packet.getOffset(), packet.getLength(),Charset.forName("ISO_8859_1"));
-		
+		String data = new String(packet.getData(), packet.getOffset(), packet.getLength(),
+				Charset.forName("ISO_8859_1"));
+
 		String[] header_body = data.split(HeaderCreater.CRLF + HeaderCreater.CRLF, 2);
 		System.out.println("received message with the header: " + header_body[HEADER]);
 		String[] header = header_body[HEADER].split(" ");
 
-		if (header[SENDER_ID].equals(Peer.peerID))
+		if (header[SENDER_ID].equals(Peer.getPeerID()))
 			return;
 
 		if (header[MESSAGE_TYPE].toUpperCase().equals(PUTCHUNK))
@@ -53,29 +54,32 @@ public class MulticastHandler extends MessageType implements Runnable {
 			handleRemoved(header);
 		else
 			System.out.println("Not a valid Protocol");
+		
+		Peer.saveDatabases();
 	}
 
 	private void handleRemoved(String[] header) {
-		if (Peer.db.containsRestorableFile(header[FILE_ID])) {
-			Peer.db.removeChunkPeer_RetorableFile(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
+		if (Peer.getDb().containsRestorableFile(header[FILE_ID])) {
+			Peer.getDb().removeChunkPeer_RetorableFile(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
 					header[SENDER_ID]);
 			System.out.println("Removed peer from restorableFile:" + header[FILE_ID] + " with the Chunk Number: "
 					+ header[CHUNK_NO]);
 		} else {
 			Chunk chunkPutChunk = new Chunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]);
-			Peer.db.addChunkRemovedPutChunk(chunkPutChunk);
-			Peer.db.removeChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
+			Peer.getDb().addChunkRemovedPutChunk(chunkPutChunk);
+			Peer.getDb().removeChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
 
 			System.out.println("Removed peer from chunk.peersIDs\n" + "File id:" + header[FILE_ID] + "\nChunk Number:"
 					+ header[CHUNK_NO]);
 
 			Utils.threadSleep(401);
-			int replicationDeg = Peer.db.getChunkReplicationDegree(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]);
-			if ((Peer.db.getChunkPeesrIDsSize(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]) < replicationDeg)
-					&& !Peer.db.getChunkRemovedPutChunk(chunkPutChunk)) {
+			int replicationDeg = Peer.getDb().getChunkReplicationDegree(Integer.parseInt(header[CHUNK_NO]),
+					header[FILE_ID]);
+			if ((Peer.getDb().getChunkPeesrIDsSize(Integer.parseInt(header[CHUNK_NO]),
+					header[FILE_ID]) < replicationDeg) && !Peer.getDb().getChunkRemovedPutChunk(chunkPutChunk)) {
 
 				Chunk tempChunk;
-				if ((tempChunk = Peer.db.getChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) == null) {
+				if ((tempChunk = Peer.getDb().getChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) == null) {
 					System.out.println("Error: unexpected error ocurred");
 					return;
 				}
@@ -85,78 +89,79 @@ public class MulticastHandler extends MessageType implements Runnable {
 				Peer.MulticastChannels[Peer.MDB_CHANNEL].send(message);
 				System.out.println("Sending putChunk message after removed request");
 			}
-			Peer.db.removeChunkRemovedPutChunk(chunkPutChunk);
+			Peer.getDb().removeChunkRemovedPutChunk(chunkPutChunk);
 		}
 	}
 
 	private void handleDelete(String[] header) {
-		Peer.db.removeRestorableFile(header[FILE_ID]);
-		Peer.db.removeChunksByFileID(header[FILE_ID]);
-		System.out.println("Deleted File with the File ID: " +header[FILE_ID]);
+		Peer.getDb().removeRestorableFile(header[FILE_ID]);
+		Peer.getDb().removeChunksByFileID(header[FILE_ID]);
+		System.out.println("Deleted File with the File ID: " + header[FILE_ID]);
 		return;
 	}
 
 	private void handleChunk(String[] header, String body) {
-		if (Peer.db.containsRestorableFile(header[FILE_ID])) {
-			if (Peer.db.containsRestoredFile(header[FILE_ID])) {
-				RestoredFile to_add_chunk = Peer.db.getRestoredFile(header[FILE_ID]);
-				to_add_chunk.addData(Integer.parseInt(header[CHUNK_NO]), body);
-				System.out.println("Restored chunk with File id: " +header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
-			}
-		} else {
-			Peer.db.addRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]));
-			System.out.println("Chunk Restored\nFile id: " +header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
+
+		if (Peer.getDb().containsRestoredFile(header[FILE_ID])) {
+			RestoredFile to_add_chunk = Peer.getDb().getRestoredFile(header[FILE_ID]);
+			to_add_chunk.addData(Integer.parseInt(header[CHUNK_NO]), body);
+			System.out
+					.println("Restored chunk with File id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
+		} else if(Peer.getDb().hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])){
+			Peer.getDb().addRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]));
+			System.out.println("Chunk Restored\nFile id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
 		}
 
 	}
 
 	private void handleGetChunk(String[] header) {
-		if (!Peer.db.hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]))
+		if (!Peer.getDb().hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]))
 			return;
 		Utils.threadSleep(401);
 
-		if (!Peer.db.containsRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]))) {
+		if (!Peer.getDb().containsRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]))) {
 			Chunk tempChunk;
-			if ((tempChunk = Peer.db.getChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) == null) {
+			if ((tempChunk = Peer.getDb().getChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) == null) {
 				System.out.println("Error: unexpected error ocurred");
 				return;
 			}
 			byte[] message = Utils.concatenateArrays(HeaderCreater.chunk(tempChunk.getFileID(), tempChunk.getChunkNo()),
 					tempChunk.getData());
 			Peer.MulticastChannels[Peer.MDR_CHANNEL].send(message);
-			System.out.println("Sending Chunk to be restored\nFile id: " +header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
+			System.out.println(
+					"Sending Chunk to be restored\nFile id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
 		}
-		Peer.db.removeRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]));
+		Peer.getDb().removeRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]));
 	}
 
 	private void handleStored(String[] header) {
-		if (Peer.db.containsRestorableFile(header[FILE_ID])) {
-			Peer.db.addChunkPeer_RetorableFile(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
+		if (Peer.getDb().containsRestorableFile(header[FILE_ID])) {
+			Peer.getDb().addChunkPeer_RetorableFile(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
+					header[SENDER_ID]);
 		} else {
-			if (Peer.db.hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) {
-				Peer.db.addChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
+			if (Peer.getDb().hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) {
+				Peer.getDb().addChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
 			}
 		}
-		System.out.println("Added to PeersID/ChunkPeers "+ header[SENDER_ID]);
+		System.out.println("Added to PeersID/ChunkPeers " + header[SENDER_ID]);
 	}
 
 	private void handlePutchunk(String[] header, String body) {
-		Peer.db.setTrueChunkRemovedPutChunk(new Chunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]));
+		Peer.getDb().setTrueChunkRemovedPutChunk(new Chunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]));
 
 		byte[] bodyData = body.getBytes(Charset.forName("ISO_8859_1"));
 
-		if (Peer.db.containsRestorableFile(header[FILE_ID]) || bodyData.length > Peer.ds.getSpaceLeft()) {
+		if (Peer.getDb().containsRestorableFile(header[FILE_ID]) || bodyData.length > Peer.getDs().getSpaceLeft()) {
 			return;
 		}
 
-		if (Peer.db.addChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
+		if (Peer.getDb().addChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
 				Integer.parseInt(header[REPLICATION_DEG]), bodyData)) {
-			Peer.ds.addUsedSpace(bodyData.length);
 
 			Utils.threadSleep(401);
 
 			Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.stored(header[FILE_ID], header[CHUNK_NO]));
-			System.out.println("Stored Chunk\nFile id: " +header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
+			System.out.println("Stored Chunk\nFile id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
 		}
 	}
 

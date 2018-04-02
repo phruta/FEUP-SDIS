@@ -36,9 +36,10 @@ public class DataBase implements Serializable {
 		Chunk tempChunk = new Chunk(chunkNo, fileID, replicationDegree, body);
 		boolean to_return= chunks.contains(tempChunk);
 		
-		if(!to_return)
+		if(!to_return) {
 			chunks.add(tempChunk);
-		
+			Peer.getDs().addUsedSpace(body.length);
+		}
 		return !to_return;		
 	}
 	
@@ -51,7 +52,7 @@ public class DataBase implements Serializable {
 	public synchronized void removeChunksByFileID(String fileID) {
 		for(Chunk chunk:chunks) {
 			if(chunk.getFileID().equals(fileID)) {
-				Peer.ds.removeUsedSpace(chunk.getDataSize());
+				Peer.getDs().removeUsedSpace(chunk.getDataSize());
 				chunk.removeBodyData();
 				chunks.remove(chunk);
 			}

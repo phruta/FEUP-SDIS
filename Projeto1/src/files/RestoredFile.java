@@ -72,7 +72,7 @@ public class RestoredFile implements Serializable {
 		for(int i: data.keySet())
 			file = Utils.concatenateArrays(file, data.get(i));
 		try {
-			File f= new File("./RestoredFiles/"+fileName);
+			File f= new File("../RestoredFiles/"+fileName);
 			f.getParentFile().mkdirs();
 			Files.write(f.toPath(), file);
 		} catch (IOException e) {

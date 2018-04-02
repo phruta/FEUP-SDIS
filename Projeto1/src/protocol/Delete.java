@@ -16,11 +16,12 @@ public class Delete implements Runnable {
 	@Override
 	public void run() {
 		String fileID = Utils.getFileId(file);
-		Peer.db.removeRestorableFile(fileID);
-		Peer.db.removeChunksByFileID(fileID);
+		Peer.getDb().removeRestorableFile(fileID);
+		Peer.getDb().removeChunksByFileID(fileID);
 		
 		Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.delete(fileID));
 		System.out.println("Deleted File with the File ID: " +fileID);
+		Peer.saveDatabases();
 	}
 
 }

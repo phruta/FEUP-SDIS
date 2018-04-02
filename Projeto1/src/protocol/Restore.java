@@ -3,6 +3,7 @@ package protocol;
 import java.io.File;
 
 import Server.Peer;
+import files.Chunk;
 import files.RestorableFileInfo;
 import files.RestoredFile;
 import utils.Utils;
@@ -18,23 +19,26 @@ public class Restore implements Runnable{
 	@Override
 	public void run() {
 		fileID = Utils.getFileId(file);
+		String fileName = file.getName();
+		int numChunks= Utils.getFileData(file).length/Chunk.MAX_SIZE + 1;
+		
 		System.out.println("Restoring file with the file id: " +fileID);
 		RestorableFileInfo fileToRestore;
 		
-		if((fileToRestore=Peer.db.getRestorableFileInformation(fileID))==null) {
-			if((fileToRestore=Peer.db.getRestorableFileByFilename(file.getName()))==null)
-			{
-				System.out.println("ERROR: This Peer cannot restore the file" + file.getName());
-				return;
-			}else
-				fileID=fileToRestore.getFileID();
-		}
+		if (((fileToRestore = Peer.getDb().getRestorableFileInformation(fileID)) != null)
+				|| ((fileToRestore = Peer.getDb().getRestorableFileByFilename(file.getName())) != null)) {
+			fileID = fileToRestore.getFileID();
+			fileName = fileToRestore.getFileName();
+			numChunks = fileToRestore.getNumChunks();
+		} else
+			System.out.println(
+					"WARNING: This Peer didn't initiate the backup for this file, there's no guarantee for this restore");
 
 		
-		RestorableFileInfo rfi= Peer.db.getRestorableFileInformation(fileID);
-		Peer.db.addRestoredFile(rfi.getFileID(),rfi.getFileName());
 		
-		for (int i=0; i<fileToRestore.getNumChunks();i++) {
+		Peer.getDb().addRestoredFile(fileID,fileName);
+		
+		for (int i=0; i<numChunks;i++) {
 			byte[] message= HeaderCreater.getChunk(fileID, i);
 			Peer.MulticastChannels[Peer.MC_CHANNEL].send(message);
 			Utils.threadSleep(50);
@@ -42,19 +46,20 @@ public class Restore implements Runnable{
 		Utils.threadSleep(1000);
 		
 		
-		RestoredFile restoredFile=Peer.db.getRestoredFile(fileID);
+		RestoredFile restoredFile=Peer.getDb().getRestoredFile(fileID);
 		
 		for(int i=0; i<3;i++) {
-			if(restoredFile.dataSize()==fileToRestore.getNumChunks()) {
+			if(restoredFile.dataSize()==numChunks) {
 				if(!restoredFile.saveFile())
 					System.out.print("ERROR: Couldn't save the file properly, try again");
-				if(!Peer.db.removeRestoredFile(restoredFile))
+				if(!Peer.getDb().removeRestoredFile(restoredFile))
 					System.out.print("ERROR: Couldn't remove file from database");
 				return;
 			}
 		Utils.threadSleep(1000);		
 		}
 		System.out.print("ERROR: Couldn't restore the file properly, try again");
+		Peer.saveDatabases();
 	}
 	
 	

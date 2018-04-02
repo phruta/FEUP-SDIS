@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
 
-import Server.Peer;
 
 public class Utils {
 	public static byte[] concatenateArrays(byte[] header,byte[] body) {
@@ -18,7 +17,7 @@ public class Utils {
 	}
 	
 	public static synchronized String getFileId(File file) {
-		String fileInfo= file.getName()+file.lastModified()+Peer.peerID;	
+		String fileInfo= file.getName()+file.lastModified()+file.getAbsolutePath();	
 		
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
