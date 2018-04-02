@@ -72,7 +72,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 			System.out.println("Removed peer from chunk.peersIDs\n" + "File id:" + header[FILE_ID] + "\nChunk Number:"
 					+ header[CHUNK_NO]);
 
-			Utils.threadSleep(401);
+			Utils.threadRandomSleep();
 			int replicationDeg = Peer.getDb().getChunkReplicationDegree(Integer.parseInt(header[CHUNK_NO]),
 					header[FILE_ID]);
 			if ((Peer.getDb().getChunkPeesrIDsSize(Integer.parseInt(header[CHUNK_NO]),
@@ -117,7 +117,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 	private void handleGetChunk(String[] header) {
 		if (!Peer.getDb().hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]))
 			return;
-		Utils.threadSleep(401);
+		Utils.threadRandomSleep();
 
 		if (!Peer.getDb().containsRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]))) {
 			Chunk tempChunk;
@@ -158,7 +158,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 		if (Peer.getDb().addChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
 				Integer.parseInt(header[REPLICATION_DEG]), bodyData)) {
 
-			Utils.threadSleep(401);
+			Utils.threadRandomSleep();
 
 			Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.stored(header[FILE_ID], header[CHUNK_NO]));
 			System.out.println("Stored Chunk\nFile id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);

@@ -10,6 +10,7 @@ import utils.Utils;
 import utils.HeaderCreater;
 
 public class Restore implements Runnable{
+	private static final int DEFAULT_SLEEP_TIME = 1000;
 	File file;
 	String fileID;
 	public Restore(File file) {
@@ -43,7 +44,7 @@ public class Restore implements Runnable{
 			Peer.MulticastChannels[Peer.MC_CHANNEL].send(message);
 			Utils.threadSleep(50);
 		}
-		Utils.threadSleep(1000);
+		Utils.threadSleep(DEFAULT_SLEEP_TIME);
 		
 		
 		RestoredFile restoredFile=Peer.getDb().getRestoredFile(fileID);
@@ -53,10 +54,11 @@ public class Restore implements Runnable{
 				if(!restoredFile.saveFile())
 					System.out.print("ERROR: Couldn't save the file properly, try again");
 				if(!Peer.getDb().removeRestoredFile(restoredFile))
-					System.out.print("ERROR: Couldn't remove file from database");
+					System.out.print("ERROR: Couldn't remove restoredFile from database");
+				System.out.print("Restore Successful");
 				return;
 			}
-		Utils.threadSleep(1000);		
+		Utils.threadSleep(DEFAULT_SLEEP_TIME);		
 		}
 		System.out.print("ERROR: Couldn't restore the file properly, try again");
 		Peer.saveDatabases();

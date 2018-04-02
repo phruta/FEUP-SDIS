@@ -48,11 +48,15 @@ public class Utils {
 		return data;
 	}
 	
-	public static void threadSleep(int time) {
+	public static void threadRandomSleep() {
 		Random ran = new Random();
-		int sleepTime = ran.nextInt(time);
+		int sleepTime = ran.nextInt(401);
+		threadSleep(sleepTime);
+	}
+	
+	public static void threadSleep(int time) {
 		try {
-			Thread.sleep(sleepTime);
+			Thread.sleep(time);
 		} catch (Exception e) {
 			e.getMessage();
 			e.printStackTrace();

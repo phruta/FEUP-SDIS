@@ -11,7 +11,6 @@ import utils.HeaderCreater;
 
 public class Backup implements Runnable{
 	private static final int DEFAULT_SLEEP_TIME = 1000;
-	private static final int TRYS_PUTCHUNK_NUMBER = 5;
 	private File file;
 	private int replicationDegree;
 
@@ -45,14 +44,12 @@ public class Backup implements Runnable{
 			}
 			byte[] message= Utils.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);	
 	
-			for(int j=1; j<TRYS_PUTCHUNK_NUMBER+1;j++) {
-				Utils.threadSleep(DEFAULT_SLEEP_TIME*j);
-				if(Peer.getDb().getChunkPeerSize_RetorableFile(i, fileId)<replicationDegree) {
-					Peer.MulticastChannels[Peer.MDB_CHANNEL].send(message);
-				}
-				else break;
+			new Thread(new BackupChunk(i, replicationDegree, fileId, message)).start();
+			if(i%16==0) {
+				Utils.threadSleep(DEFAULT_SLEEP_TIME);
 			}
 		}
+
 		Peer.saveDatabases();
 		return;
 	}
