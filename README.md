@@ -3,6 +3,7 @@
 ## How to compile
 O projeto pode ser compilado usando o comando javac:
 javac Client\*.java files\*.java Server\*.java multicastChannels\*java protocol\*.java utils\*.java
+
 Alternativamente pode ser o usado o eclipse para importar o projecto e compilá-lo automaticamente.
 
 
