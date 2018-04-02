@@ -62,4 +62,15 @@ public class Utils {
 			e.printStackTrace();
 		}
 	}
+	
+	public static File getFile(String fileStr) {
+		File file = new File(fileStr);
+
+		if (!file.exists() || !file.isFile()) {
+			System.out.println("ERROR: The path you indicated is not a file");
+			return null;
+		}
+
+		return file;
+	}
 }

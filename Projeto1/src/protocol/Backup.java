@@ -19,7 +19,7 @@ public class Backup implements Runnable{
 	public Backup(File file, int replicationDegree) {
 		this.file = file;
 		this.replicationDegree = replicationDegree;
-		threadpool=Executors.newFixedThreadPool(16);
+		threadpool=Executors.newFixedThreadPool(8);
 	}
 
 	@Override
