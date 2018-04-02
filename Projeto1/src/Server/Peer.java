@@ -8,10 +8,12 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.Executors;
 
 import files.DataBase;
 import files.DiskSpace;
 import multicastChannels.*;
+import utils.Utils;
 
 public class Peer extends PeerInterfaceImplementation {
 
@@ -35,6 +37,7 @@ public class Peer extends PeerInterfaceImplementation {
 	private static volatile DiskSpace ds;
 	private static volatile String peerID;
 	private static volatile String version;
+	
 
 	public static Channel[] MulticastChannels = new Channel[3];
 
@@ -52,7 +55,19 @@ public class Peer extends PeerInterfaceImplementation {
 		new Thread(MulticastChannels[MC_CHANNEL]).start();
 		new Thread(MulticastChannels[MDB_CHANNEL]).start();
 		new Thread(MulticastChannels[MDR_CHANNEL]).start();
-
+		threadpool=Executors.newFixedThreadPool(2);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+		       for(Channel channel: MulticastChannels)
+		        	channel.shutdown();
+		       threadpool.shutdown();
+		       while(!threadpool.isTerminated()) {
+		    	  Utils.threadSleep(50);;
+		       }
+		    }
+		});
+		
 		System.err.println("Server ready");
 	}
 
