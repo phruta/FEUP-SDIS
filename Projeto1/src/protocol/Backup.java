@@ -44,7 +44,7 @@ public class Backup implements Runnable{
 			}
 			byte[] message= Utils.concatenateArrays(HeaderCreater.putChunk(fileId, i, replicationDegree), chunkdata);	
 	
-			new Thread(new BackupChunk(i, replicationDegree, fileId, message)).start();
+			new Thread(new SendChunk(i, replicationDegree, fileId, message)).start();
 			if(i%16==0) {
 				Utils.threadSleep(DEFAULT_SLEEP_TIME);
 			}

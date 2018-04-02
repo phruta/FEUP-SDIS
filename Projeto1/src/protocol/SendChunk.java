@@ -3,7 +3,7 @@ package protocol;
 import Server.Peer;
 import utils.Utils;
 
-public class BackupChunk implements Runnable {
+public class SendChunk implements Runnable {
 	private static final int DEFAULT_SLEEP_TIME = 1000;
 	private static final int TRYS_PUTCHUNK_NUMBER = 5;
 	
@@ -13,7 +13,7 @@ public class BackupChunk implements Runnable {
 	private byte[] message;
 
 	
-	public BackupChunk(int chunkNo, int replicationDegree, String fileId, byte[] message) {
+	public SendChunk(int chunkNo, int replicationDegree, String fileId, byte[] message) {
 		super();
 		this.chunkNo = chunkNo;
 		this.replicationDegree = replicationDegree;
