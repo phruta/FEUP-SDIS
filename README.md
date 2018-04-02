@@ -22,7 +22,7 @@ Após criado o "\_Stub" correr o seguinte comando na pasta que contém os fichei
 
 Depois de todos estes passos podemos correr os programas Peer e TestApp:
 ### Peer
-Para lanças um peer usar o comando:
+Para correr um peer usar o comando:
 
 java Server.Peer <version> <ID> <Access Point> <MC address> <MC port> <MDB address> <MDB port> <MDR address> <MDR port>
 
@@ -42,9 +42,6 @@ java Client.TestApp <Access Point> state
 Pastas como Databases, Chunks e RestoredFiles serão criadas durante a execução destes programas se quisermos dar reset a todas as informações do Peer<ID> é necessário apagar as mesmas.
   
 O "File Path" necessários em alguns dos comandos pode ser relativo ou absoluto.
- The file path used by the restore and delete commands can be a relative path, an absolute path, or just a file name followed by the file extension.
-
-After having built the project with eclipse, open a Terminal in the bin folder resultant of the build process. You can then launch a peer or issue a command with the trigger.
 
 O argumento amount of space no caso do TestApp reclaim é indicador da capacidade/tamanho de disco que queremos que o Peer<ID> tenha.
 
