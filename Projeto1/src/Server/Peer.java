@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import files.DataBase;
 import files.DiskSpace;
@@ -55,16 +56,19 @@ public class Peer extends PeerInterfaceImplementation {
 		new Thread(MulticastChannels[MC_CHANNEL]).start();
 		new Thread(MulticastChannels[MDB_CHANNEL]).start();
 		new Thread(MulticastChannels[MDR_CHANNEL]).start();
-		threadpool=Executors.newFixedThreadPool(2);
+		threadpool=Executors.newFixedThreadPool(3);
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() {
 		       for(Channel channel: MulticastChannels)
 		        	channel.shutdown();
 		       threadpool.shutdown();
-		       while(!threadpool.isTerminated()) {
-		    	  Utils.threadSleep(50);;
-		       }
+		       try {
+				threadpool.awaitTermination(3, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				e.getMessage();
+				e.printStackTrace();
+			}
 		    }
 		});
 		
