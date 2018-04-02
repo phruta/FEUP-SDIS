@@ -54,7 +54,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 			handleRemoved(header);
 		else
 			System.out.println("Not a valid Protocol");
-		
+
 		Peer.saveDatabases();
 	}
 
@@ -64,9 +64,8 @@ public class MulticastHandler extends MessageType implements Runnable {
 					header[SENDER_ID]);
 			System.out.println("Removed peer from restorableFile:" + header[FILE_ID] + " with the Chunk Number: "
 					+ header[CHUNK_NO]);
-		} else {
-			Chunk chunkPutChunk = new Chunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]);
-			Peer.getDb().addChunkRemovedPutChunk(chunkPutChunk);
+		} else if(Peer.getDb().hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) {
+			Peer.getDb().addChunkRemovedPutChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]);
 			Peer.getDb().removeChunkPeerID(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID], header[SENDER_ID]);
 
 			System.out.println("Removed peer from chunk.peersIDs\n" + "File id:" + header[FILE_ID] + "\nChunk Number:"
@@ -76,7 +75,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 			int replicationDeg = Peer.getDb().getChunkReplicationDegree(Integer.parseInt(header[CHUNK_NO]),
 					header[FILE_ID]);
 			if ((Peer.getDb().getChunkPeesrIDsSize(Integer.parseInt(header[CHUNK_NO]),
-					header[FILE_ID]) < replicationDeg) && !Peer.getDb().getChunkRemovedPutChunk(chunkPutChunk)) {
+					header[FILE_ID]) < replicationDeg) && !Peer.getDb().getChunkRemovedPutChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) {
 
 				Chunk tempChunk;
 				if ((tempChunk = Peer.getDb().getChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) == null) {
@@ -89,7 +88,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 				Peer.MulticastChannels[Peer.MDB_CHANNEL].send(message);
 				System.out.println("Sending putChunk message after removed request");
 			}
-			Peer.getDb().removeChunkRemovedPutChunk(chunkPutChunk);
+			
 		}
 	}
 
@@ -107,7 +106,7 @@ public class MulticastHandler extends MessageType implements Runnable {
 			to_add_chunk.addData(Integer.parseInt(header[CHUNK_NO]), body);
 			System.out
 					.println("Restored chunk with File id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
-		} else if(Peer.getDb().hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])){
+		} else if (Peer.getDb().hasChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID])) {
 			Peer.getDb().addRestoredChunk(header[FILE_ID], Integer.parseInt(header[CHUNK_NO]));
 			System.out.println("Chunk Restored\nFile id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
 		}
@@ -147,22 +146,21 @@ public class MulticastHandler extends MessageType implements Runnable {
 	}
 
 	private void handlePutchunk(String[] header, String body) {
-		Peer.getDb().setTrueChunkRemovedPutChunk(new Chunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]));
+		Peer.getDb().setTrueChunkRemovedPutChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID]);
 
 		byte[] bodyData = body.getBytes(Charset.forName("ISO_8859_1"));
 
-		if (Peer.getDb().containsRestorableFile(header[FILE_ID]) || bodyData.length > Peer.getDs().getSpaceLeft()) {
+		if (Peer.getDb().containsRestorableFile(header[FILE_ID]) || bodyData.length > (Peer.getDs().getCapacitySpace() - Peer.getDb().chunksDataSize())) {
 			return;
 		}
 
-		if (Peer.getDb().addChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
-				Integer.parseInt(header[REPLICATION_DEG]), bodyData)) {
+		Peer.getDb().addChunk(Integer.parseInt(header[CHUNK_NO]), header[FILE_ID],
+				Integer.parseInt(header[REPLICATION_DEG]), bodyData);
 
-			Utils.threadRandomSleep();
+		Utils.threadRandomSleep();
+		System.out.println("Stored Chunk\nFile id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
+		Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.stored(header[FILE_ID], header[CHUNK_NO]));
 
-			Peer.MulticastChannels[Peer.MC_CHANNEL].send(HeaderCreater.stored(header[FILE_ID], header[CHUNK_NO]));
-			System.out.println("Stored Chunk\nFile id: " + header[FILE_ID] + "\nChunk Number:" + header[CHUNK_NO]);
-		}
 	}
 
 }

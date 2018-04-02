@@ -43,7 +43,9 @@ public class Chunk implements Serializable {
 		super();
 		this.chunkNo = chunkNo;
 		this.fileID = fileID;
-		this.pathToChunk="./Chunks/"+Peer.getPeerID()+"-"+fileID+"-"+Integer.toString(chunkNo)+".chunk";
+		this.pathToChunk="../Chunks/"+Peer.getPeerID()+"-"+fileID+"-"+Integer.toString(chunkNo)+".chunk";
+		File f= new File(pathToChunk);
+		pathToChunk=f.getAbsolutePath();
 	}
 
 
@@ -126,6 +128,7 @@ public class Chunk implements Serializable {
 			File f= new File(pathToChunk);
 			f.getParentFile().mkdirs();
 			Files.write(f.toPath(), data);
+			pathToChunk=f.getAbsolutePath();
 		} catch (IOException e) {
 			e.getMessage();
 			e.printStackTrace();
@@ -137,6 +140,11 @@ public class Chunk implements Serializable {
 	
 	public boolean removeBodyData() {
 		File f= new File(pathToChunk);
-		return f.delete();
+		
+		if(f.delete()) {
+			System.out.println("Deleted " + pathToChunk);
+			return true;
+		}
+		return false;
 	}
 }
