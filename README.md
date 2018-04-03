@@ -1,4 +1,4 @@
-# FEUP-SDIS
+# Distributed Backup Service
 
 ## How to compile
 O projeto pode ser compilado usando o comando javac:
@@ -44,4 +44,9 @@ Pastas como Databases, Chunks e RestoredFiles serão criadas durante a execuçã
 O "File Path" necessários em alguns dos comandos pode ser relativo ou absoluto.
 
 O argumento amount of space no caso do TestApp reclaim é indicador da capacidade/tamanho de disco que queremos que o Peer<ID> tenha.
+
+
+Rúben José da Silva Torres - up201405612
+João Miguel Matos Monteiro - 201506130
+
 
