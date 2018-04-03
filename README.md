@@ -45,7 +45,7 @@ O "File Path" necessários em alguns dos comandos pode ser relativo ou absoluto.
 
 O argumento amount of space no caso do TestApp reclaim é indicador da capacidade/tamanho de disco que queremos que o Peer<ID> tenha.
 
-
+## Projecto realizado por:
 Rúben José da Silva Torres - up201405612
 
 João Miguel Matos Monteiro - 201506130
