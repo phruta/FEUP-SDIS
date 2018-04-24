@@ -36,8 +36,6 @@ java Client.TestApp <Access Point> delete <file path>
 java Client.TestApp <Access Point> reclaim <amount of space>
 java Client.TestApp <Access Point> state
   
-**Importante: O programa foi testado em windows, não foram feitos testes em linux.**    
-  
 ## Notas
 Pastas como Databases, Chunks e RestoredFiles serão criadas durante a execução destes programas se quisermos dar reset a todas as informações do Peer<ID> é necessário apagar as mesmas.
   
@@ -47,7 +45,5 @@ O argumento amount of space no caso do TestApp reclaim é indicador da capacidad
 
 ## Projecto realizado por:
 Rúben José da Silva Torres - up201405612
-
-João Miguel Matos Monteiro - 201506130
 
 
